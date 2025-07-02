@@ -53,6 +53,44 @@ function indago_digital_theme_setup()
 }
 add_action('after_setup_theme', 'indago_digital_theme_setup');
 
+// --- REMOVE DEFAULT WP MENUS & FEATURES ---
+
+/**
+ * Remove default Posts, Pages, and Comments menus from the admin sidebar.
+ */
+function indago_digital_remove_default_menus()
+{
+	remove_menu_page('edit.php'); // Posts
+	remove_menu_page('edit.php?post_type=page'); // Pages
+	remove_menu_page('edit-comments.php'); // Comments
+}
+add_action('admin_menu', 'indago_digital_remove_default_menus');
+
+/**
+ * Remove comments and "+ New" links from the top admin bar.
+ */
+function indago_digital_remove_admin_bar_items()
+{
+	global $wp_admin_bar;
+	$wp_admin_bar->remove_node('comments');
+	$wp_admin_bar->remove_node('new-post');
+	$wp_admin_bar->remove_node('new-page');
+}
+add_action(
+	'wp_before_admin_bar_render',
+	'indago_digital_remove_admin_bar_items'
+);
+
+/**
+ * Remove comment support from default post types.
+ */
+function indago_digital_remove_comment_support()
+{
+	remove_post_type_support('post', 'comments');
+	remove_post_type_support('page', 'comments');
+}
+add_action('init', 'indago_digital_remove_comment_support', 100);
+
 // --- CATCH-ALL ROUTE FOR VUE ROUTER ---
 
 /**
@@ -118,6 +156,7 @@ function indago_digital_register_project_post_type()
 		'has_archive' => true,
 		'hierarchical' => false,
 		'menu_position' => 5,
+		'menu_icon' => 'dashicons-portfolio', // This sets the menu icon
 		'supports' => ['title', 'editor', 'excerpt', 'thumbnail'],
 		'show_in_rest' => true,
 		'rest_base' => 'projects',
