@@ -1,0 +1,29 @@
+# Dependencies
+/node_modules
+
+# Vite build output
+/dist
+
+# Vite dev server signal file
+/.vite
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# mkcert certificate files (just in case)
+*.pem
