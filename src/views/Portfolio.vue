@@ -1,17 +1,30 @@
 <template>
 	<div>
-		<h2>Our Work</h2>
+		<h2 class="text-3xl font-bold mb-8 text-gray-800">Our Work</h2>
 
-		<div v-if="loading">Loading projects...</div>
+		<div v-if="loading" class="text-center text-gray-500 py-10">
+			<p>Loading projects...</p>
+		</div>
 
-		<div v-if="error">
+		<div
+			v-if="error"
+			class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md"
+		>
 			{{ error }}
 		</div>
 
-		<div v-if="projects.length > 0">
-			<article v-for="project in projects" :key="project.id">
+		<div
+			v-if="projects.length > 0"
+			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+		>
+			<article
+				v-for="project in projects"
+				:key="project.id"
+				class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:-translate-y-1"
+			>
 				<!-- Featured Image -->
 				<div
+					class="h-48 w-full bg-gray-200"
 					v-if="
 						project._embedded &&
 						project._embedded['wp:featuredmedia']
@@ -22,15 +35,20 @@
 							project._embedded['wp:featuredmedia'][0].source_url
 						"
 						:alt="project.title.rendered"
+						class="w-full h-full object-cover"
 					/>
 				</div>
 
-				<div>
+				<div class="p-6 flex flex-col flex-grow">
 					<!-- Title -->
-					<h3 v-html="project.title.rendered"></h3>
+					<h3
+						class="text-xl font-bold text-gray-900 mb-2"
+						v-html="project.title.rendered"
+					></h3>
 
 					<!-- Categories -->
 					<div
+						class="mb-4 flex flex-wrap gap-2"
 						v-if="project._embedded && project._embedded['wp:term']"
 					>
 						<template
@@ -40,6 +58,7 @@
 								<span
 									v-if="term.taxonomy === 'project_category'"
 									:key="term.id"
+									class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full"
 								>
 									{{ term.name }}
 								</span>
@@ -48,10 +67,14 @@
 					</div>
 
 					<!-- Excerpt -->
-					<div v-html="project.excerpt.rendered"></div>
+					<div
+						class="text-gray-700 text-base mb-4 flex-grow"
+						v-html="project.excerpt.rendered"
+					></div>
 
 					<!-- Client Info -->
 					<div
+						class="mt-auto pt-4 border-t border-gray-200"
 						v-if="project._embedded && project._embedded['wp:term']"
 					>
 						<template
@@ -61,14 +84,18 @@
 								<div
 									v-if="term.taxonomy === 'client'"
 									:key="term.id"
+									class="flex items-center"
 								>
-									<!-- The src now points to the URL we fetch and attach in the script -->
 									<img
 										v-if="term.client_logo_url"
 										:src="term.client_logo_url"
 										:alt="term.name + ' Logo'"
+										class="h-10 w-10 rounded-full object-contain mr-3 bg-gray-100 p-1"
 									/>
-									<span>{{ term.name }}</span>
+									<span
+										class="text-sm font-semibold text-gray-600"
+										>{{ term.name }}</span
+									>
 								</div>
 							</template>
 						</template>

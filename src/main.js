@@ -1,9 +1,10 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router' // 1. Import the router
+import {createApp} from 'vue';
+import App from './App.vue';
+import router from './router';
+import 'uno.css'; // Import UnoCSS
 
-const app = createApp(App)
+const app = createApp(App);
 
-app.use(router) // 2. Tell the app to use the router
+app.use(router);
 
-app.mount('#app')
+app.mount('#app');
