@@ -53,6 +53,34 @@ function indago_digital_theme_setup()
 }
 add_action('after_setup_theme', 'indago_digital_theme_setup');
 
+// --- CATCH-ALL ROUTE FOR VUE ROUTER ---
+
+/**
+ * Redirect all non-admin, non-API, non-file requests to the main index.php file
+ * to let the Vue Router handle the routing.
+ */
+function indago_digital_handle_vue_routes()
+{
+	// Don't interfere with the admin area, API requests, or real files/directories.
+	if (
+		is_admin() ||
+		strpos($_SERVER['REQUEST_URI'], '/wp-json/') !== false ||
+		file_exists(ABSPATH . ltrim($_SERVER['REQUEST_URI'], '/'))
+	) {
+		return;
+	}
+
+	// If the request is not for the root, load the main index file.
+	if ($_SERVER['REQUEST_URI'] !== '/') {
+		global $wp_query;
+		$wp_query->set_404();
+		status_header(200);
+		include get_template_directory() . '/index.php';
+		exit();
+	}
+}
+add_action('template_redirect', 'indago_digital_handle_vue_routes');
+
 // --- PROJECTS POST TYPE & TAXONOMIES ---
 
 function indago_digital_register_project_post_type()
