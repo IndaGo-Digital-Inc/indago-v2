@@ -33,7 +33,8 @@ export default defineConfig({
 	],
 	build: {
 		manifest: true,
-		outDir: 'dist',
+		manifestFileName: 'manifest.json',
+		outDir: '../dist',
 		rollupOptions: {
 			input: 'src/main.js',
 		},

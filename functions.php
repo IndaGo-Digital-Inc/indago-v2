@@ -20,7 +20,7 @@ function indago_digital_enqueue_vite_assets()
 		}
 		add_action('wp_head', 'vite_head_module_hook');
 	} else {
-		$manifest_path = get_template_directory() . '/dist/manifest.json';
+		$manifest_path = get_template_directory() . '/dist/.vite/manifest.json';
 		if (file_exists($manifest_path)) {
 			$manifest = json_decode(file_get_contents($manifest_path), true);
 			if (is_array($manifest)) {
