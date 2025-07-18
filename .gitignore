@@ -1,9 +1,6 @@
 # Dependencies
 /node_modules
 
-# Vite build output
-/dist
-
 # Vite dev server signal file
 /.vite
 
