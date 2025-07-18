@@ -3,7 +3,7 @@
     <div class="narrow-container flex flex-col items-start justify-between w-full gap-[140px]">
       <div class="flex flex-col gap-[30px] w-full max-w-[330px] mx-auto">
         <IdLogoText class="h-[20px] w-[191px] fill-id-purple" />
-        <TypingText :text="'Bespoke Digital Marketing that Captivates and Converts'" :speed="30" class="w-full" />
+        <TypingText :text="'Bespoke Digital Marketing that Captivates and Converts'" :speed="40" class="w-full" />
       </div>
       <div class="w-full">
         <div class="flex justify-end w-full">

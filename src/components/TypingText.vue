@@ -48,10 +48,10 @@ function charIndex(wIdx, cIdx) {
 function randomGlitch() {
     // 0: none, 1: X, 2: Y, 3: both
     const r = Math.random();
-    if (r < 0.5) return 0; // 50% no glitch
-    if (r < 0.75) return 1; // 25% X
-    if (r < 0.95) return 2; // 20% Y
-    return 3; // 5% both
+    if (r < 0.4) return 0; // 40% no glitch
+    if (r < 0.6) return 1; // 20% X
+    if (r < 0.8) return 2; // 20% Y
+    return 3; // 20% both
 }
 
 function glitchClass(wIdx, cIdx, isVisible) {
