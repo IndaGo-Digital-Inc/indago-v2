@@ -1,5 +1,5 @@
 <template>
-  <div class="container min-h-[5000px] pt-[120px]">
+  <div class="container min-h-[5000px] pt-[120px] flex flex-col">
     <div class="narrow-container flex flex-col items-start justify-between w-full gap-[140px]">
       <div class="flex flex-col gap-[30px] max-w-[330px] mx-auto">
         <IdLogoText class="h-[20px] w-[191px] fill-id-purple" />
@@ -17,13 +17,11 @@
         </button>
       </div>
     </div>
-    <div class="narrow-container flex flex-col items-start justify-between w-full pt-[150px]">
+    <div class="flex flex-col items-start justify-between max-w-[342px] mx-auto pt-[150px]">
       <SvgScrollAnimation :svgs="svgs" :deadSpace="0.2" />
-      <p class="pt-[60px] max-w-[342px]">IndaGo Digital crafts captivating digital experiences that set you apart from
-        your
-        competition and drive
-        measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented
-        digital marketing to fuel your online success.</p>
+      <p class="pt-[60px]">IndaGo Digital crafts captivating digital experiences that set you apart from your
+        competition and drive measurable results. We blend innovative website development, data-driven SEO strategies,
+        and results-oriented digital marketing to fuel your online success.</p>
     </div>
   </div>
 </template>
