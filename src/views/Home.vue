@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="narrow-container flex flex-col items-start justify-between w-full pt-[150px]">
-      <SvgScrollAnimation :svgs="svgs" :deadSpace="0.2" :color="'fill-id-yellow'" />
+      <SvgScrollAnimation :svgs="svgs" :deadSpace="0.2" />
       <p class="pt-[60px] max-w-[342px]">IndaGo Digital crafts captivating digital experiences that set you apart from
         your
         competition and drive
@@ -45,14 +45,14 @@ import TimeAnim from '../assets/stop-blending-in/time.svg';
 import ItsAnim from '../assets/stop-blending-in/its.svg';
 
 const svgs = [
-  StopAnim,
-  BlendingAnim,
-  InAnim,
-  ItsAnim,
-  TimeAnim,
-  ToAnim,
-  StandAnim,
-  OutAnim,
+  { component: StopAnim, color: 'fill-id-dark-grey' },
+  { component: BlendingAnim, color: 'fill-id-dark-grey' },
+  { component: InAnim, color: 'fill-id-dark-grey' },
+  { component: ItsAnim, color: 'fill-id-purple' },
+  { component: TimeAnim, color: 'fill-id-purple' },
+  { component: ToAnim, color: 'fill-id-purple' },
+  { component: StandAnim, color: 'fill-id-purple' },
+  { component: OutAnim, color: 'fill-id-purple' },
 ];
 </script>
 

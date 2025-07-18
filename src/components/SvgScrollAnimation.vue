@@ -1,6 +1,6 @@
 <template>
     <div ref="svgContainer">
-        <component :is="svgs[activeIndex]" class="w-full block" :class="color" />
+        <component :is="svgs[activeIndex].component" class="w-full block" :class="svgs[activeIndex].color" />
     </div>
 </template>
 
@@ -12,9 +12,9 @@ const props = defineProps({
         type: Array,
         required: true,
     },
-    color: {
-        type: String,
-        default: 'fill-id-purple',
+    deadSpace: {
+        type: Number,
+        default: 0.2,
     },
 });
 
