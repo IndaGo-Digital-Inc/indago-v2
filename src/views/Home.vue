@@ -2,15 +2,14 @@
   <div class="container min-h-[300vh] pt-[120px] flex flex-col">
     <div class="narrow-container flex flex-col items-start justify-between w-full gap-[140px]">
       <div class="flex flex-col gap-[30px] w-full max-w-[330px] mx-auto">
-        <IdLogoText class="h-[20px] w-[191px] fill-id-purple" />
+        <IdLogoText class="h-[20px] w-[191px] fill-id-medium-grey" />
         <TypingText :text="'Bespoke Digital Marketing that Captivates and Converts'" :speed="40" class="w-full" />
       </div>
       <div class="w-full">
         <div class="flex justify-end w-full">
-          <button class="btn btn-primary flex flex-row items-center justify-center gap-[15px]">Let’s
-            Connect
-            <ArrowRight class="fill-id-yellow h-[18px] rotate-90" />
-          </button>
+          <ArrowButton>
+            Let’s Connect
+          </ArrowButton>
         </div>
         <button class="w-[36px] hidden md:block">
           <ChevronDown class="fill-id-dark-grey" />
@@ -29,8 +28,8 @@
 <script setup>
 import SvgScrollAnimation from '../components/SvgScrollAnimation.vue';
 import TypingText from '../components/TypingText.vue';
+import ArrowButton from '../components/ArrowButton.vue';
 
-import ArrowRight from '../assets/arrow-right.svg';
 import ChevronDown from '../assets/id-chevron-down.svg';
 import IdLogoText from '../assets/id-logo-text.svg';
 

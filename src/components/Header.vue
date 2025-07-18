@@ -4,7 +4,7 @@ import IdLogo from '../assets/id-logo.svg';
 
 <template>
     <header class="container flex justify-between items-center bg-id-black pt-[20px]">
-        <IdLogo class="h-[30px] fill-id-yellow" />
+        <IdLogo class="h-[30px] fill-id-purple" />
     </header>
 </template>
 
