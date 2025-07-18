@@ -1,9 +1,9 @@
 <template>
-  <div class="container min-h-[5000px] pt-[120px] flex flex-col">
+  <div class="container min-h-[300vh] pt-[120px] flex flex-col">
     <div class="narrow-container flex flex-col items-start justify-between w-full gap-[140px]">
-      <div class="flex flex-col gap-[30px] max-w-[330px] mx-auto">
+      <div class="flex flex-col gap-[30px] w-full max-w-[330px] mx-auto">
         <IdLogoText class="h-[20px] w-[191px] fill-id-purple" />
-        <h1>Bespoke Digital Marketing that Captivates and Converts</h1>
+        <TypingText :text="'Bespoke Digital Marketing that Captivates and Converts'" :speed="30" class="w-full" />
       </div>
       <div class="w-full">
         <div class="flex justify-end w-full">
@@ -28,6 +28,7 @@
 
 <script setup>
 import SvgScrollAnimation from '../components/SvgScrollAnimation.vue';
+import TypingText from '../components/TypingText.vue';
 
 import ArrowRight from '../assets/arrow-right.svg';
 import ChevronDown from '../assets/id-chevron-down.svg';
@@ -56,6 +57,6 @@ const svgs = [
 
 <style scoped>
 h1 {
-  font-size: 3rem;
+  font-size: 44px;
 }
 </style>
