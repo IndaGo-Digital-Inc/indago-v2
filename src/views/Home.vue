@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="narrow-container flex flex-col items-start justify-between w-full pt-[150px]">
-      <SvgScrollAnimation :svgs="svgs" :deadSpace="0.2" :color="'fill-id-purple'" />
+      <SvgScrollAnimation :svgs="svgs" :deadSpace="0.2" :color="'fill-id-yellow'" />
       <p class="pt-[60px] max-w-[342px]">IndaGo Digital crafts captivating digital experiences that set you apart from
         your
         competition and drive
