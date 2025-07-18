@@ -1,8 +1,9 @@
-import {defineConfig} from 'vite';
+import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import mkcert from 'vite-plugin-mkcert';
 import fs from 'fs';
 import UnoCSS from 'unocss/vite'; // 1. Import UnoCSS
+import svgLoader from 'vite-svg-loader';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -10,6 +11,7 @@ export default defineConfig({
 		vue(),
 		UnoCSS(), // 2. Add the UnoCSS plugin
 		mkcert(),
+		svgLoader(),
 		{
 			name: 'wordpress-vite-helper',
 			configureServer(server) {

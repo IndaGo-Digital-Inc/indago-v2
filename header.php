@@ -7,5 +7,3 @@
 </head>
 <body <?php body_class(); ?>>
     <?php wp_body_open(); ?>
-    <div id="page" class="site">
-        <main id="content" class="site-content">
