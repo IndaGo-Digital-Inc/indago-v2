@@ -7,16 +7,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/Home.vue'),
   },
   {
-    path: '/services',
-    name: 'Services',
-    component: () => import('../views/Services.vue'),
-  },
-  {
-    path: '/portfolio',
-    name: 'Portfolio',
-    component: () => import('../views/Portfolio.vue'),
-  },
-  {
     path: '/about',
     name: 'About',
     component: () => import('../views/About.vue'),
@@ -25,6 +15,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/contact',
     name: 'Contact',
     component: () => import('../views/Contact.vue'),
+  },
+  {
+    path: '/portfolio',
+    name: 'Portfolio',
+    component: () => import('../views/Portfolio.vue'),
+  },
+  {
+    path: '/services',
+    name: 'Services',
+    component: () => import('../views/Services.vue'),
   },
 ];
 

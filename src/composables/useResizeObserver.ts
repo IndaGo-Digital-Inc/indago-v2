@@ -1,32 +1,38 @@
-import { Ref } from 'vue';
+import { Ref, ref, onMounted, onUnmounted, watch } from 'vue';
 
-export function useResizeObserver(
-  target: Ref<HTMLElement | null>,
-  callback: (entry: ResizeObserverEntry) => void
-) {
+export function useResizeObserver(targetRef: Ref<HTMLElement | null>) {
+  const elementHeight = ref(0);
   let observer: ResizeObserver | null = null;
 
-  function observe() {
-    if (target.value) {
-      observer = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          callback(entry);
-        }
+  function updateHeight() {
+    if (targetRef.value) {
+      elementHeight.value = targetRef.value.offsetHeight;
+    }
+  }
+
+  onMounted(() => {
+    updateHeight();
+    if (targetRef.value instanceof Element) {
+      observer = new ResizeObserver(() => {
+        updateHeight();
       });
-      observer.observe(target.value);
+      observer.observe(targetRef.value);
     }
-  }
+  });
 
-  function unobserve() {
-    if (observer && target.value) {
-      observer.unobserve(target.value);
+  onUnmounted(() => {
+    if (observer && targetRef.value instanceof Element) {
+      observer.unobserve(targetRef.value);
       observer.disconnect();
-      observer = null;
     }
-  }
+  });
 
-  return {
-    observe,
-    unobserve,
-  };
+  watch(targetRef, (el) => {
+    updateHeight();
+    if (observer && el instanceof Element) {
+      observer.observe(el);
+    }
+  });
+
+  return { elementHeight };
 }
