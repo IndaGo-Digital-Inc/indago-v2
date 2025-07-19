@@ -3,7 +3,11 @@
     <span v-for="(word, wIdx) in words" :key="wIdx" class="word-block">
       <span v-for="(char, cIdx) in word.split('')" :key="cIdx"
         class="letter letter-upper"
-        :class="{ visible: charIndex(wIdx, cIdx) < displayedText.length, [glitchClass(wIdx, cIdx, charIndex(wIdx, cIdx) < displayedText.length)]: true }"
+        :class="{
+        visible: charIndex(wIdx, cIdx) < displayedText.length,
+        removed: removedIndices.has(charIndex(wIdx, cIdx)),
+        [glitchClass(wIdx, cIdx, charIndex(wIdx, cIdx) < displayedText.length)]: true
+      }"
         :style="glitchStyle(wIdx, cIdx)"
       >
         {{ char === ' ' ? '\u00A0' : char }}
@@ -38,6 +42,7 @@ const displayedText = ref('');
 const words = computed(() => props.text.split(' '));
 const glitchMap = ref([]);
 let glitchInterval = null;
+const removedIndices = ref(new Set());
 
 // Get glitch class based on probabilities
 const { getGlitchClass } = useGlitchEffect({
@@ -66,30 +71,45 @@ function charIndex(wIdx, cIdx) {
 // Get the glitch class for a character if visible
 function glitchClass(wIdx, cIdx, isVisible) {
   const idx = charIndex(wIdx, cIdx);
+  // If letter is removed, never show glitch class
+  if (removedIndices.value.has(idx)) return '';
   return isVisible ? glitchMap.value[idx] : '';
 }
 
 // Style for glitch rotation
 function glitchStyle() {
-  // Randomly choose either 90deg or 180deg for each letter
   const deg = Math.random() < 0.5 ? '90deg' : '180deg';
-  // Randomize skewX and skewY between 0 and 30deg
   const skewX = (Math.random() * 30).toFixed(2) + 'deg';
   const skewY = (Math.random() * 30).toFixed(2) + 'deg';
-  const fontWeight = Math.random() < 0.5 ? 'bold' : 'normal';
-  // Randomly choose purple, dark-grey, or inherit
+  // Instead of fontWeight, use a much stronger textShadow with the same color as the letter
   const colorRand = Math.random();
-  let color = 'inherit';
-  if (colorRand < 0.33) color = '#a259ff'; // purple
-  else if (colorRand < 0.66) color = '#232323'; // dark-grey
-  const transitionDuration = (0.2 + Math.random() * 0.6).toFixed(2) + 's'; // 0.2s to 0.8s
+  let color = '#ffffff'; // fallback color
+  if (colorRand < 0.5) color = '#a259ff';
+  // Only use visible colors for glitch effect
+  const transitionDuration = (0.2 + Math.random() * 0.6).toFixed(2) + 's';
+  // Randomize transform axis
+  const axes = ['x', 'y', 'z', 'xy', 'xz', 'yz', 'xyz'];
+  const axis = axes[Math.floor(Math.random() * axes.length)];
+  let transform = '';
+  if (axis === 'x') transform = `rotateX(${deg}) skewX(${skewX}) skewY(${skewY})`;
+  else if (axis === 'y') transform = `rotateY(${deg}) skewX(${skewX}) skewY(${skewY})`;
+  else if (axis === 'z') transform = `rotateZ(${deg}) skewX(${skewX}) skewY(${skewY})`;
+  else if (axis === 'xy') transform = `rotateX(${deg}) rotateY(${deg}) skewX(${skewX}) skewY(${skewY})`;
+  else if (axis === 'xz') transform = `rotateX(${deg}) rotateZ(${deg}) skewX(${skewX}) skewY(${skewY})`;
+  else if (axis === 'yz') transform = `rotateY(${deg}) rotateZ(${deg}) skewX(${skewX}) skewY(${skewY})`;
+  else if (axis === 'xyz') transform = `rotateX(${deg}) rotateY(${deg}) rotateZ(${deg}) skewX(${skewX}) skewY(${skewY})`;
+  // Very low probability for border
+  const borderRand = Math.random();
+  let border = 'none';
+  if (borderRand < 0.03) border = `1px solid ${color}`;
+  // Much stronger text shadow with the same color as the letter
+  const textShadow = `0 0 16px ${color}, 0 0 8px ${color}, 0 0 2px ${color}`;
   return {
-    '--glitch-rotate': deg,
-    '--glitch-skew-x': skewX,
-    '--glitch-skew-y': skewY,
-    '--glitch-font-weight': fontWeight,
+    '--glitch-transform': transform,
     '--glitch-color': color,
     '--glitch-transition-duration': transitionDuration,
+    '--glitch-border': border,
+    '--glitch-text-shadow': textShadow,
   };
 }
 
@@ -97,6 +117,7 @@ function glitchStyle() {
 function startTyping() {
   let i = 0;
   glitchMap.value = Array(props.text.length).fill('').map(() => getGlitchClass(true));
+  removedIndices.value.clear();
   function type() {
     if (i <= props.text.length) {
       displayedText.value = props.text.slice(0, i);
@@ -115,12 +136,14 @@ function startGlitching() {
   if (glitchInterval) clearInterval(glitchInterval);
   function glitchCycle() {
     const len = props.text.length;
-    // Randomly choose how many letters to glitch (between 1 and 4, or up to len)
-    const numGlitch = Math.max(1, Math.floor(Math.random() * Math.min(4, len)) + 1);
-    // Pick unique random indices
+    // Only consider non-removed indices
+    const availableIndices = Array.from({ length: len }, (_, i) => i).filter(i => !removedIndices.value.has(i));
+    if (availableIndices.length === 0) return;
+    const numGlitch = Math.max(1, Math.floor(Math.random() * Math.min(4, availableIndices.length)) + 1);
+    // Pick unique random indices from available
     const indices = [];
     while (indices.length < numGlitch) {
-      const idx = Math.floor(Math.random() * len);
+      const idx = availableIndices[Math.floor(Math.random() * availableIndices.length)];
       if (!indices.includes(idx)) indices.push(idx);
     }
     for (let idx = 0; idx < len; idx++) {
@@ -132,26 +155,57 @@ function startGlitching() {
   glitchCycle();
 }
 
+// After typing completes, start removing letters after 20s
+let removeTimer = null;
+function startRemovingLetters() {
+  if (removeTimer) clearTimeout(removeTimer);
+  removeTimer = setTimeout(() => {
+    function removeCycle() {
+      // Only consider non-removed and visible indices
+      const len = props.text.length;
+      const availableIndices = Array.from({ length: len }, (_, i) => i)
+        .filter(i => !removedIndices.value.has(i) && i < displayedText.value.length);
+      if (availableIndices.length === 0) {
+        // All letters removed, restart typing animation
+        displayedText.value = '';
+        startTyping();
+        startGlitching();
+        startRemovingLetters();
+        return;
+      }
+      // Randomly pick one to remove
+      const idxToRemove = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+      removedIndices.value.add(idxToRemove);
+      // Continue removing every 400-1200ms
+      setTimeout(removeCycle, 400 + Math.random() * 800);
+    }
+    removeCycle();
+  }, 10000);
+}
+
 onMounted(() => {
   startTyping();
   startGlitching();
+  startRemovingLetters();
 });
 
 watch(() => [props.text, props.speed], () => {
   displayedText.value = '';
   startTyping();
   startGlitching();
+  startRemovingLetters();
 });
 
 onUnmounted(() => {
   if (glitchInterval) clearTimeout(glitchInterval);
+  if (removeTimer) clearTimeout(removeTimer);
 });
 </script>
 
 <style scoped>
 .letter {
   opacity: 0;
-  transition: opacity 0.5s, transform var(--glitch-transition-duration, 0.3s) cubic-bezier(.68, -0.55, .27, 1.55);
+  transition: color 0.2s ease, opacity 0.5s, transform var(--glitch-transition-duration, 0.3s) cubic-bezier(.68, -0.55, .27, 1.55);
   display: inline-block;
   transform: none;
   will-change: transform;
@@ -164,72 +218,30 @@ onUnmounted(() => {
   opacity: 1;
   transform: none;
 }
+.letter.removed {
+  opacity: 0 !important;
+  pointer-events: none;
+}
 .letter-upper {
   text-transform: uppercase;
 }
 
-/* Skew effect for glitched letters */
+/* Use only the --glitch-transform variable for all glitch classes */
 .letter.glitch-x,
-
-
-.letter.glitch-x {
-  transform: rotateY(var(--glitch-rotate)) skewX(var(--glitch-skew-x)) skewY(var(--glitch-skew-y));
-  font-weight: var(--glitch-font-weight);
-  color: var(--glitch-color);
-}
-
-.letter.glitch-x-neg {
-  transform: rotateY(calc(-1 * var(--glitch-rotate))) skewX(var(--glitch-skew-x)) skewY(var(--glitch-skew-y));
-  font-weight: var(--glitch-font-weight);
-  color: var(--glitch-color);
-}
-
-.letter.glitch-y {
-  transform: rotateX(var(--glitch-rotate)) skewX(var(--glitch-skew-x)) skewY(var(--glitch-skew-y));
-  font-weight: var(--glitch-font-weight);
-  color: var(--glitch-color);
-}
-
-.letter.glitch-y-neg {
-  transform: rotateX(calc(-1 * var(--glitch-rotate))) skewX(var(--glitch-skew-x)) skewY(var(--glitch-skew-y));
-  font-weight: var(--glitch-font-weight);
-  color: var(--glitch-color);
-}
-
-.letter.glitch-xy {
-  transform: rotateY(var(--glitch-rotate)) rotateX(var(--glitch-rotate)) skewX(var(--glitch-skew-x)) skewY(var(--glitch-skew-y));
-  font-weight: var(--glitch-font-weight);
-  color: var(--glitch-color);
-}
-
-.letter.glitch-xy-neg {
-  transform: rotateY(calc(-1 * var(--glitch-rotate))) rotateX(calc(-1 * var(--glitch-rotate))) skewX(var(--glitch-skew-x)) skewY(var(--glitch-skew-y));
-  font-weight: var(--glitch-font-weight);
-  color: var(--glitch-color);
-}
-
-.letter.glitch-z {
-  transform: rotateZ(var(--glitch-rotate)) skewX(var(--glitch-skew-x)) skewY(var(--glitch-skew-y));
-  font-weight: var(--glitch-font-weight);
-  color: var(--glitch-color);
-}
-
-.letter.glitch-z-neg {
-  transform: rotateZ(calc(-1 * var(--glitch-rotate))) skewX(var(--glitch-skew-x)) skewY(var(--glitch-skew-y));
-  font-weight: var(--glitch-font-weight);
-  color: var(--glitch-color);
-}
-
-.letter.glitch-xyz {
-  transform: rotateX(var(--glitch-rotate)) rotateY(var(--glitch-rotate)) rotateZ(var(--glitch-rotate)) skewX(var(--glitch-skew-x)) skewY(var(--glitch-skew-y));
-  font-weight: var(--glitch-font-weight);
-  color: var(--glitch-color);
-}
-
+.letter.glitch-x-neg,
+.letter.glitch-y,
+.letter.glitch-y-neg,
+.letter.glitch-xy,
+.letter.glitch-xy-neg,
+.letter.glitch-z,
+.letter.glitch-z-neg,
+.letter.glitch-xyz,
 .letter.glitch-xyz-neg {
-  transform: rotateX(calc(-1 * var(--glitch-rotate))) rotateY(calc(-1 * var(--glitch-rotate))) rotateZ(calc(-1 * var(--glitch-rotate))) skewX(var(--glitch-skew-x)) skewY(var(--glitch-skew-y));
-  font-weight: var(--glitch-font-weight);
+  transform: var(--glitch-transform);
   color: var(--glitch-color);
+  border: var(--glitch-border);
+  text-shadow: var(--glitch-text-shadow);
+  border-radius: 100px;
 }
 
 .word-block {
