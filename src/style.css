@@ -1,49 +1,101 @@
+
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;700;900&display=swap");
 
 body {
-    overflow-x: hidden;
-    color: #b6b6b6;
-    font-family: Montserrat, sans-serif;
-    font-size: 16px;
+  font-family: Montserrat, sans-serif;
+  font-size: 16px;
+  color: #b6b6b6;
+  overflow-x: hidden;
 }
 
 .container {
-    max-width: unset;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 30px;
-    padding-right: 30px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
 .narrow-container {
-    width: 100%;
-    max-width: 1640px;
-    margin-left: auto;
-    margin-right: auto;
+  width: 100%;
+  max-width: 1640px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-p {
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 200;
-    line-height: 1.675em;
-}
-
+/* Base typography */
 h1 {
-    font-style: normal;
-    font-weight: 200;
-    line-height: 1.1;
-    letter-spacing: 4.48px;
-    text-transform: uppercase;
+  font-size: 44px;
+  font-style: normal;
+  font-weight: 200;
+  line-height: 1.1;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+h4 {
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+h5 {
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 0.4px;
+}
+p {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 200;
+  line-height: 1.675em;
+}
+button {
+  background-color: transparent;
+  border: none;
+  color: #ffe412;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 200;
 }
 
-button {
-    background-color: transparent;
-    border: none;
-    color: #ffe412;
-    font-size: 18px;
-    text-transform: uppercase;
-    letter-spacing: 2.24px;
-    font-weight: 200;
+/* Responsive Typography Breakpoints */
+@media (min-width: 480px) {
+  h1 { font-size: 36px; letter-spacing: 2.5px; }
+  h4 { font-size: 15px; letter-spacing: 0.55px; }
+  h5 { font-size: 13px; letter-spacing: 0.45px; }
+  p  { font-size: 16px; }
+  button { font-size: 17px; letter-spacing: 1.7px; }
+}
+@media (min-width: 768px) {
+  h1 { font-size: 44px; letter-spacing: 4px; }
+  h4 { font-size: 16px; letter-spacing: 0.64px; }
+  h5 { font-size: 14px; letter-spacing: 0.56px; }
+  p  { font-size: 16px; }
+  button { font-size: 18px; letter-spacing: 2.24px; }
+}
+@media (min-width: 1024px) {
+  h1 { font-size: 56px; letter-spacing: 5px; }
+  h4 { font-size: 18px; letter-spacing: 0.8px; }
+  h5 { font-size: 16px; letter-spacing: 0.7px; }
+  p  { font-size: 18px; }
+  button { font-size: 20px; letter-spacing: 2.5px; }
+}
+@media (min-width: 1376px) {
+  h1 { font-size: 72px; letter-spacing: 6px; }
+  h4 { font-size: 20px; letter-spacing: 1px; }
+  h5 { font-size: 18px; letter-spacing: 0.8px; }
+  p  { font-size: 20px; }
+  button { font-size: 22px; letter-spacing: 3px; }
+}
+@media (min-width: 1921px) {
+  h1 { font-size: 88px; letter-spacing: 7px; }
+  h4 { font-size: 22px; letter-spacing: 1.2px; }
+  h5 { font-size: 20px; letter-spacing: 1px; }
+  p  { font-size: 22px; }
+  button { font-size: 24px; letter-spacing: 3.5px; }
 }

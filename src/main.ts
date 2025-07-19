@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import '@unocss/reset/tailwind.css';
 import App from './App.vue';
-import router from './router';
+import router from './router/index';
 import 'uno.css';
 import './style.css';
 

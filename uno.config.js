@@ -16,5 +16,5 @@ export default defineConfig({
             'id-purple': '#4B0082',
             'id-dark-purple': '#1F1131',
         }
-    }
+    },
 })

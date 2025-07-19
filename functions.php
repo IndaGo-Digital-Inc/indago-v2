@@ -1,4 +1,71 @@
 <?php
+/**
+ * Register the Services post type.
+ */
+function indago_digital_register_service_post_type() {
+	$labels = [
+		'name' => _x('Services', 'Post type general name', 'indagodigital'),
+		'singular_name' => _x('Service', 'Post type singular name', 'indagodigital'),
+		'menu_name' => _x('Services', 'Admin Menu text', 'indagodigital'),
+		'name_admin_bar' => _x('Service', 'Add New on Toolbar', 'indagodigital'),
+		'add_new' => __('Add New', 'indagodigital'),
+		'add_new_item' => __('Add New Service', 'indagodigital'),
+		'new_item' => __('New Service', 'indagodigital'),
+		'edit_item' => __('Edit Service', 'indagodigital'),
+		'view_item' => __('View Service', 'indagodigital'),
+		'all_items' => __('All Services', 'indagodigital'),
+	];
+
+	$args = [
+		'labels' => $labels,
+		'public' => true,
+		'publicly_queryable' => true,
+		'show_ui' => true,
+		'show_in_menu' => true,
+		'query_var' => true,
+		'rewrite' => ['slug' => 'service'],
+		'capability_type' => 'post',
+		'has_archive' => true,
+		'hierarchical' => false,
+		'menu_position' => 6,
+		'menu_icon' => 'dashicons-admin-generic',
+		'supports' => ['title', 'editor', 'excerpt', 'thumbnail'],
+		'show_in_rest' => true,
+		'rest_base' => 'services',
+		'rest_controller_class' => 'WP_REST_Posts_Controller',
+	];
+	register_post_type('service', $args);
+}
+add_action('init', 'indago_digital_register_service_post_type');
+
+/**
+ * Register a custom taxonomy for Services (assignable to Projects).
+ */
+function indago_digital_register_service_taxonomy() {
+	$labels = [
+		'name' => _x('Services', 'taxonomy general name', 'indagodigital'),
+		'singular_name' => _x('Service', 'taxonomy singular name', 'indagodigital'),
+		'menu_name' => __('Services', 'indagodigital'),
+	];
+
+	$args = [
+		'hierarchical' => false, // Like tags, not categories
+		'labels' => $labels,
+		'show_ui' => true,
+		'show_admin_column' => true,
+		'query_var' => true,
+		'rewrite' => ['slug' => 'service'],
+		'show_in_rest' => true,
+		'rest_base' => 'services-tax',
+		'rest_controller_class' => 'WP_REST_Terms_Controller',
+	];
+
+	register_taxonomy('service', ['project'], $args);
+}
+add_action('init', 'indago_digital_register_service_taxonomy');
+
+// TODO: Add custom code to sync service taxonomy terms with service posts if needed.
+
 
 // Exit if accessed directly
 defined('ABSPATH') || exit();
@@ -16,7 +83,7 @@ function indago_digital_enqueue_vite_assets()
 		function vite_head_module_hook()
 		{
 			echo '<script type="module" src="https://localhost:5173/@vite/client"></script>';
-			echo '<script type="module" src="https://localhost:5173/src/main.js"></script>';
+			echo '<script type="module" src="https://localhost:5173/src/main.ts"></script>';
 		}
 		add_action('wp_head', 'vite_head_module_hook');
 	} else {
@@ -24,7 +91,7 @@ function indago_digital_enqueue_vite_assets()
 		if (file_exists($manifest_path)) {
 			$manifest = json_decode(file_get_contents($manifest_path), true);
 			if (is_array($manifest)) {
-				$entry_file = $manifest['src/main.js']['file'] ?? null;
+				$entry_file = $manifest['src/main.ts']['file'] ?? null;
 				if ($entry_file) {
 					wp_enqueue_script(
 						'indago-digital-main',
@@ -34,7 +101,7 @@ function indago_digital_enqueue_vite_assets()
 						true
 					);
 				}
-				$css_file = $manifest['src/main.js']['css'][0] ?? null;
+				$css_file = $manifest['src/main.ts']['css'][0] ?? null;
 				if ($css_file) {
 					wp_enqueue_style(
 						'indago-digital-main',
@@ -157,7 +224,7 @@ function indago_digital_register_project_post_type()
 		'hierarchical' => false,
 		'menu_position' => 5,
 		'menu_icon' => 'dashicons-portfolio', // This sets the menu icon
-		'supports' => ['title', 'editor', 'excerpt', 'thumbnail'],
+		'supports' => ['title', 'editor', 'excerpt', 'thumbnail', 'page-attributes'],
 		'show_in_rest' => true,
 		'rest_base' => 'projects',
 		'rest_controller_class' => 'WP_REST_Posts_Controller',
@@ -170,16 +237,16 @@ function indago_digital_register_project_taxonomy()
 {
 	$labels = [
 		'name' => _x(
-			'Project Categories',
+			'Categories',
 			'taxonomy general name',
 			'indagodigital'
 		),
 		'singular_name' => _x(
-			'Project Category',
+			'Category',
 			'taxonomy singular name',
 			'indagodigital'
 		),
-		'menu_name' => __('Project Categories', 'indagodigital'),
+		'menu_name' => __('Categories', 'indagodigital'),
 	];
 
 	$args = [
@@ -188,12 +255,12 @@ function indago_digital_register_project_taxonomy()
 		'show_ui' => true,
 		'show_admin_column' => true,
 		'query_var' => true,
-		'rewrite' => ['slug' => 'project-category'],
+		'rewrite' => ['slug' => 'category'],
 		'show_in_rest' => true,
-		'rest_base' => 'project_categories',
+		'rest_base' => 'categories',
 		'rest_controller_class' => 'WP_REST_Terms_Controller',
 	];
-	register_taxonomy('project_category', ['project'], $args);
+	register_taxonomy('category', ['project'], $args);
 }
 add_action('init', 'indago_digital_register_project_taxonomy');
 

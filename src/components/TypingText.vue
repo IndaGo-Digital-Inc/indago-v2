@@ -1,158 +1,191 @@
 <template>
-    <h1 class="w-full">
-        <span v-for="(word, wIdx) in displayedWords" :key="wIdx" class="word-block">
-            <span v-for="(char, cIdx) in word" :key="cIdx" class="letter" :class="[
-                { visible: charIndex(wIdx, cIdx) < displayedText.length },
-                glitchClass(wIdx, cIdx, charIndex(wIdx, cIdx) < displayedText.length)
-            ]">
-                <template v-if="char === ' '">
-                    &nbsp;
-                </template>
-                <template v-else>{{ char }}</template>
-            </span>
-            <br />
+  <h1 class="w-full">
+    <span v-if="displayedText.length < props.text.length">
+      <span v-for="(word, wIdx) in displayedWords" :key="wIdx" class="word-block">
+        <span v-for="(char, cIdx) in word" :key="cIdx"
+          class="letter"
+          :class="[
+            { visible: charIndex(wIdx, cIdx) < displayedText.length },
+            glitchClass(wIdx, cIdx, charIndex(wIdx, cIdx) < displayedText.length)
+          ]"
+          :style="glitchStyle(wIdx, cIdx)"
+        >
+          <template v-if="char === ' '">
+            &nbsp;
+          </template>
+          <template v-else>{{ char }}</template>
         </span>
-    </h1>
+        <br />
+      </span>
+    </span>
+    <span v-else>
+      <span v-for="(word, wIdx) in displayedWords" :key="wIdx" class="word-block">
+        <span v-for="(char, cIdx) in word" :key="cIdx"
+          class="letter visible"
+          :style="glitchStyle(wIdx, cIdx)"
+        >
+          <template v-if="char === ' '">
+            &nbsp;
+          </template>
+          <template v-else>{{ char }}</template>
+        </span>
+        <br />
+      </span>
+    </span>
+  </h1>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue';
-import { useLivingGlitch } from '../composables/useLivingGlitch';
+import { ref, onMounted, watch, computed, onUnmounted } from 'vue';
+import { useGlitchEffect } from '../composables/useGlitchEffect';
 
 const props = defineProps({
-    text: {
-        type: String,
-        required: true,
-    },
-    speed: {
-        type: Number,
-        default: 30,
-    },
-    livingGlitchSpeed: {
-        type: Object,
-        default: () => ({ min: 200, max: 1500 }),
-    },
+  text: {
+    type: String,
+    required: true,
+  },
+  speed: {
+    type: Number,
+    default: 50,
+  },
+  glitchProbNone: {
+    type: Number,
+    default: 0.4,
+  },
+  glitchProbX: {
+    type: Number,
+    default: 0.1,
+  },
+  glitchProbXNeg: {
+    type: Number,
+    default: 0.1,
+  },
+  glitchProbY: {
+    type: Number,
+    default: 0.1,
+  },
+  glitchProbYNeg: {
+    type: Number,
+    default: 0.1,
+  },
+  glitchProbBoth: {
+    type: Number,
+    default: 0.1,
+  },
+  glitchProbBothNeg: {
+    type: Number,
+    default: 0.1,
+  },
+  glitchRotateCoeff: {
+    type: Number,
+    default: 2,
+  },
 });
 
 const displayedText = ref('');
-
 const words = computed(() => props.text.split(' '));
 const displayedWords = computed(() => words.value.map(word => word.split('')));
 
-// Store random glitch directions for each character
 const glitchMap = ref([]);
+const glitchRotateCoeffs = ref([]);
+const { getGlitchClass } = useGlitchEffect({
+  glitchProbNone: props.glitchProbNone,
+  glitchProbX: props.glitchProbX,
+  glitchProbXNeg: props.glitchProbXNeg,
+  glitchProbY: props.glitchProbY,
+  glitchProbYNeg: props.glitchProbYNeg,
+  glitchProbBoth: props.glitchProbBoth,
+  glitchProbBothNeg: props.glitchProbBothNeg,
+});
 
-// Store temporary living glitch states for each character
-const livingGlitchMap = ref([]);
-
-// Living glitch composable instance
-let livingGlitch = null;
+const glitchRootStyle = computed(() => {
+  // Default base is 180deg, multiplied by coeff
+  const base = 180 * props.glitchRotateCoeff;
+  return { '--glitch-rotate': `${base}deg` };
+});
 
 function charIndex(wIdx, cIdx) {
-    let idx = 0;
-    for (let i = 0; i < wIdx; i++) {
-        idx += words.value[i].length + 1; // +1 for space
-    }
-    return idx + cIdx;
-}
-
-function randomGlitch() {
-    // 0: none, 1: X, 2: Y, 3: both
-    const r = Math.random();
-    if (r < 0.4) return 0; // 40% no glitch
-    if (r < 0.6) return 1; // 20% X
-    if (r < 0.8) return 2; // 20% Y
-    return 3; // 20% both
+  let idx = 0;
+  for (let i = 0; i < wIdx; i++) {
+    idx += words.value[i].length + 1; // +1 for space
+  }
+  return idx + cIdx;
 }
 
 function glitchClass(wIdx, cIdx, isVisible) {
-    const idx = charIndex(wIdx, cIdx);
-    // Living glitch effect (post-animation)
-    const living = livingGlitchMap.value[idx] || 0;
-    if (isVisible && living) {
-        if (living === 1) return 'glitch-x';
-        if (living === 2) return 'glitch-y';
-        if (living === 3) return 'glitch-xy';
-    }
-    // Initial typing glitch effect
-    const g = glitchMap.value[idx] || 0;
-    if (!isVisible) {
-        if (g === 1) return 'glitch-x';
-        if (g === 2) return 'glitch-y';
-        if (g === 3) return 'glitch-xy';
-    }
-    return '';
+  const idx = charIndex(wIdx, cIdx);
+  return !isVisible ? glitchMap.value[idx] : '';
+}
+
+function glitchStyle(wIdx, cIdx) {
+  const idx = charIndex(wIdx, cIdx);
+  return { '--glitch-rotate': `${180 * (glitchRotateCoeffs.value[idx] || 1)}deg` };
 }
 
 function startTyping() {
-    let i = 0;
-    glitchMap.value = Array(props.text.length).fill(0).map(() => randomGlitch());
-    livingGlitchMap.value = Array(props.text.length).fill(0);
-    function type() {
-        if (i <= props.text.length) {
-            displayedText.value = props.text.slice(0, i);
-            i++;
-            setTimeout(type, props.speed);
-        } else {
-            // Start living glitch effect after typing animation
-            if (livingGlitch) livingGlitch.stop();
-            livingGlitch = useLivingGlitch({
-                getVisibleCount: () => displayedText.value.length,
-                glitchMap: livingGlitchMap,
-                randomGlitch,
-                speed: props.livingGlitchSpeed,
-            });
-            livingGlitch.start();
-        }
+  let i = 0;
+  glitchMap.value = Array(props.text.length).fill('').map(() => getGlitchClass(true));
+  glitchRotateCoeffs.value = Array(props.text.length).fill(0).map(() => (Math.random() * 1.5 + 0.5));
+  function type() {
+    if (i <= props.text.length) {
+      displayedText.value = props.text.slice(0, i);
+      i++;
+      setTimeout(type, props.speed);
     }
-    type();
+  }
+  type();
 }
 
 onMounted(startTyping);
 
-watch(() => props.text, () => {
-    displayedText.value = '';
-    if (livingGlitch) livingGlitch.stop();
-    startTyping();
+watch(() => [props.text, props.speed, props.glitchRotateCoeff], () => {
+  displayedText.value = '';
+  startTyping();
 });
 
-// Clean up interval on unmount
-import { onUnmounted } from 'vue';
 onUnmounted(() => {
-    if (livingGlitch) livingGlitch.stop();
+  // No cleanup needed
 });
 </script>
 
 <style scoped>
 .letter {
-    opacity: 0;
-    transition: opacity 0.2s, transform 0.3s cubic-bezier(.68, -0.55, .27, 1.55);
-    display: inline-block;
-    transform: none;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s cubic-bezier(.68, -0.55, .27, 1.55);
+  display: inline-block;
+  transform: none;
 }
 
 .letter.visible {
-    opacity: 1;
-    transform: none;
+  opacity: 1;
+  transform: none;
 }
 
 .letter.glitch-x {
-    transform: rotateY(90deg);
+  transform: rotateY(var(--glitch-rotate));
+}
+
+.letter.glitch-x-neg {
+  transform: rotateY(calc(-1 * var(--glitch-rotate)));
 }
 
 .letter.glitch-y {
-    transform: rotateX(90deg);
+  transform: rotateX(var(--glitch-rotate));
+}
+
+.letter.glitch-y-neg {
+  transform: rotateX(calc(-1 * var(--glitch-rotate)));
 }
 
 .letter.glitch-xy {
-    transform: rotateY(90deg) rotateX(90deg);
+  transform: rotateY(var(--glitch-rotate)) rotateX(var(--glitch-rotate));
+}
+
+.letter.glitch-xy-neg {
+  transform: rotateY(calc(-1 * var(--glitch-rotate))) rotateX(calc(-1 * var(--glitch-rotate)));
 }
 
 .word-block {
-    display: block;
-}
-
-h1 {
-    font-size: 3rem;
+  display: block;
 }
 </style>

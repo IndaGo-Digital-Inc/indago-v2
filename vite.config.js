@@ -35,7 +35,7 @@ export default defineConfig({
 		manifest: true,
 		outDir: 'dist',
 		rollupOptions: {
-			input: 'src/main.js',
+			input: 'src/main.ts',
 		},
 	},
 	server: {
