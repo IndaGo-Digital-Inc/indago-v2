@@ -1,5 +1,5 @@
 <template>
-  <div class="container min-h-[300vh] pt-[100px] flex flex-col">
+  <div class="container pt-[100px] flex flex-col">
     <div class="flex flex-col items-start justify-between w-full gap-[140px]">
       <div class="flex flex-col gap-[30px] w-full mx-auto">
         <IdLogoText class="h-[20px] w-[191px] fill-id-medium-grey" />
