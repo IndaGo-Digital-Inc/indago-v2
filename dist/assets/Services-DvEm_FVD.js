@@ -1,0 +1,1 @@
+import{_ as r,c,h as s,b as t}from"./main-Bt3tZyxI.js";const n={},o={class:"page-content"};function a(l,e){return t(),c("div",o,e[0]||(e[0]=[s("h2",null,"Services Page",-1),s("p",null,"See our services here.",-1)]))}const i=r(n,[["render",a]]);export{i as default};

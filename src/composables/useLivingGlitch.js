@@ -15,13 +15,12 @@ export function useLivingGlitch({ getVisibleCount, glitchMap, randomGlitch, spee
         const visibleCount = getVisibleCount();
         if (visibleCount > 0) {
             const idx = Math.floor(Math.random() * visibleCount);
-            let g = randomGlitch();
-            // Ensure g is 1, 2, or 3 (never 0 for living glitch)
-            if (g === 0) g = Math.floor(1 + Math.random() * 3); // 1, 2, or 3
+            // Allow only 0 (no glitch), 1 (X), or 2 (Y)
+            const g = Math.floor(Math.random() * 3); // 0, 1, or 2
             glitchMap.value[idx] = g;
             setTimeout(() => {
                 glitchMap.value[idx] = 0;
-            }, 200 + Math.random() * 200);
+            }, 200);
         }
         // Randomize next glitch interval using speed.min and speed.max
         const nextDelay = speed.min + Math.random() * (speed.max - speed.min);

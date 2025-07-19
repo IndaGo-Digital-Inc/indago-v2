@@ -1,10 +1,10 @@
 <script setup>
-import IdLogo from '../assets/id-logo.svg';
+import IdGO from '../assets/go.svg';
 </script>
 
 <template>
-    <header class="container flex justify-between items-center bg-id-black pt-[20px]">
-        <IdLogo class="h-[30px] fill-id-purple" />
+    <header class="container flex justify-between items-center bg-id-black pt-[30px]">
+        <IdGO class="h-[40px] fill-id-purple" />
     </header>
 </template>
 

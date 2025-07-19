@@ -1,7 +1,7 @@
 <template>
-  <div class="container min-h-[300vh] pt-[120px] flex flex-col">
-    <div class="narrow-container flex flex-col items-start justify-between w-full gap-[140px]">
-      <div class="flex flex-col gap-[30px] w-full max-w-[330px] mx-auto">
+  <div class="container min-h-[300vh] pt-[100px] flex flex-col">
+    <div class="flex flex-col items-start justify-between w-full gap-[140px]">
+      <div class="flex flex-col gap-[30px] w-full mx-auto">
         <IdLogoText class="h-[20px] w-[191px] fill-id-medium-grey" />
         <TypingText :text="'Bespoke Digital Marketing that Captivates and Converts'" :speed="40" class="w-full" />
       </div>
@@ -21,6 +21,15 @@
       <p class="pt-[60px]">IndaGo Digital crafts captivating digital experiences that set you apart from your
         competition and drive measurable results. We blend innovative website development, data-driven SEO strategies,
         and results-oriented digital marketing to fuel your online success.</p>
+    </div>
+    <div class="project-wrapper flex">
+      <div>
+        <h4>LOFTY Brickell</h4>
+        <h5>Luxury Residential</h5>
+      </div>
+      <div>
+        <img :src="loftyThumb" alt="LOFTY Brickell" />
+      </div>
     </div>
   </div>
 </template>
@@ -42,10 +51,12 @@ import ToAnim from '../assets/stop-blending-in/to.svg';
 import TimeAnim from '../assets/stop-blending-in/time.svg';
 import ItsAnim from '../assets/stop-blending-in/its.svg';
 
+import loftyThumb from '../assets/lofty-brickell-thumbnail.jpg';
+
 const svgs = [
-  { component: StopAnim, color: 'fill-id-dark-grey' },
-  { component: BlendingAnim, color: 'fill-id-dark-grey' },
-  { component: InAnim, color: 'fill-id-dark-grey' },
+  { component: StopAnim, color: 'fill-id-purple' },
+  { component: BlendingAnim, color: 'fill-id-purple' },
+  { component: InAnim, color: 'fill-id-purple' },
   { component: ItsAnim, color: 'fill-id-purple' },
   { component: TimeAnim, color: 'fill-id-purple' },
   { component: ToAnim, color: 'fill-id-purple' },

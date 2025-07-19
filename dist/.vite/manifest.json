@@ -1,11 +1,73 @@
 {
+  "src/assets/lofty-brickell-thumbnail.jpg": {
+    "file": "assets/lofty-brickell-thumbnail-QaKq-Pjt.jpg",
+    "src": "src/assets/lofty-brickell-thumbnail.jpg"
+  },
   "src/main.js": {
-    "file": "assets/main-c_E2R8pZ.js",
+    "file": "assets/main-Bt3tZyxI.js",
     "name": "main",
     "src": "src/main.js",
     "isEntry": true,
+    "dynamicImports": [
+      "src/views/Home.vue",
+      "src/views/Services.vue",
+      "src/views/Portfolio.vue",
+      "src/views/About.vue",
+      "src/views/Contact.vue"
+    ],
     "css": [
-      "assets/main-BvAAMQYc.css"
+      "assets/main-yI6pByt-.css"
+    ]
+  },
+  "src/views/About.vue": {
+    "file": "assets/About-BeI4wcsj.js",
+    "name": "About",
+    "src": "src/views/About.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/views/Contact.vue": {
+    "file": "assets/Contact-BVWT3zJV.js",
+    "name": "Contact",
+    "src": "src/views/Contact.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/views/Home.vue": {
+    "file": "assets/Home-wJOWjjUr.js",
+    "name": "Home",
+    "src": "src/views/Home.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ],
+    "css": [
+      "assets/Home-1Mda7qBA.css"
+    ],
+    "assets": [
+      "assets/lofty-brickell-thumbnail-QaKq-Pjt.jpg"
+    ]
+  },
+  "src/views/Portfolio.vue": {
+    "file": "assets/Portfolio-4BjAKZkW.js",
+    "name": "Portfolio",
+    "src": "src/views/Portfolio.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/views/Services.vue": {
+    "file": "assets/Services-DvEm_FVD.js",
+    "name": "Services",
+    "src": "src/views/Services.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
     ]
   }
 }
