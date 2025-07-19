@@ -1,22 +1,22 @@
 {
   "src/main.ts": {
-    "file": "assets/main-b0aZVeq8.js",
+    "file": "assets/main-BP4wT_ay.js",
     "name": "main",
     "src": "src/main.ts",
     "isEntry": true,
     "dynamicImports": [
       "src/views/Home.vue",
-      "src/views/Services.vue",
-      "src/views/Portfolio.vue",
       "src/views/About.vue",
-      "src/views/Contact.vue"
+      "src/views/Contact.vue",
+      "src/views/Portfolio.vue",
+      "src/views/Services.vue"
     ],
     "css": [
       "assets/main-BxdH5h-8.css"
     ]
   },
   "src/views/About.vue": {
-    "file": "assets/About-DNUeijYx.js",
+    "file": "assets/About-dy9_tWPT.js",
     "name": "About",
     "src": "src/views/About.vue",
     "isDynamicEntry": true,
@@ -25,7 +25,7 @@
     ]
   },
   "src/views/Contact.vue": {
-    "file": "assets/Contact-DWNUwJVY.js",
+    "file": "assets/Contact-DCi0oQQ0.js",
     "name": "Contact",
     "src": "src/views/Contact.vue",
     "isDynamicEntry": true,
@@ -34,7 +34,7 @@
     ]
   },
   "src/views/Home.vue": {
-    "file": "assets/Home-BgneIVN8.js",
+    "file": "assets/Home-B3rLisor.js",
     "name": "Home",
     "src": "src/views/Home.vue",
     "isDynamicEntry": true,
@@ -46,7 +46,7 @@
     ]
   },
   "src/views/Portfolio.vue": {
-    "file": "assets/Portfolio-Nrm4fknJ.js",
+    "file": "assets/Portfolio-BSMJxruu.js",
     "name": "Portfolio",
     "src": "src/views/Portfolio.vue",
     "isDynamicEntry": true,
@@ -55,7 +55,7 @@
     ]
   },
   "src/views/Services.vue": {
-    "file": "assets/Services-CwPE_DNu.js",
+    "file": "assets/Services-BtCD7njZ.js",
     "name": "Services",
     "src": "src/views/Services.vue",
     "isDynamicEntry": true,
