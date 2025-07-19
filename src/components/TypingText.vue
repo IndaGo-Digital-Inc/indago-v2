@@ -17,6 +17,7 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
+import { useLivingGlitch } from '../composables/useLivingGlitch';
 
 const props = defineProps({
     text: {
@@ -27,6 +28,10 @@ const props = defineProps({
         type: Number,
         default: 30,
     },
+    livingGlitchSpeed: {
+        type: Object,
+        default: () => ({ min: 200, max: 1500 }),
+    },
 });
 
 const displayedText = ref('');
@@ -36,6 +41,12 @@ const displayedWords = computed(() => words.value.map(word => word.split('')));
 
 // Store random glitch directions for each character
 const glitchMap = ref([]);
+
+// Store temporary living glitch states for each character
+const livingGlitchMap = ref([]);
+
+// Living glitch composable instance
+let livingGlitch = null;
 
 function charIndex(wIdx, cIdx) {
     let idx = 0;
@@ -56,6 +67,14 @@ function randomGlitch() {
 
 function glitchClass(wIdx, cIdx, isVisible) {
     const idx = charIndex(wIdx, cIdx);
+    // Living glitch effect (post-animation)
+    const living = livingGlitchMap.value[idx] || 0;
+    if (isVisible && living) {
+        if (living === 1) return 'glitch-x';
+        if (living === 2) return 'glitch-y';
+        if (living === 3) return 'glitch-xy';
+    }
+    // Initial typing glitch effect
     const g = glitchMap.value[idx] || 0;
     if (!isVisible) {
         if (g === 1) return 'glitch-x';
@@ -68,11 +87,22 @@ function glitchClass(wIdx, cIdx, isVisible) {
 function startTyping() {
     let i = 0;
     glitchMap.value = Array(props.text.length).fill(0).map(() => randomGlitch());
+    livingGlitchMap.value = Array(props.text.length).fill(0);
     function type() {
         if (i <= props.text.length) {
             displayedText.value = props.text.slice(0, i);
             i++;
             setTimeout(type, props.speed);
+        } else {
+            // Start living glitch effect after typing animation
+            if (livingGlitch) livingGlitch.stop();
+            livingGlitch = useLivingGlitch({
+                getVisibleCount: () => displayedText.value.length,
+                glitchMap: livingGlitchMap,
+                randomGlitch,
+                speed: props.livingGlitchSpeed,
+            });
+            livingGlitch.start();
         }
     }
     type();
@@ -82,7 +112,14 @@ onMounted(startTyping);
 
 watch(() => props.text, () => {
     displayedText.value = '';
+    if (livingGlitch) livingGlitch.stop();
     startTyping();
+});
+
+// Clean up interval on unmount
+import { onUnmounted } from 'vue';
+onUnmounted(() => {
+    if (livingGlitch) livingGlitch.stop();
 });
 </script>
 
