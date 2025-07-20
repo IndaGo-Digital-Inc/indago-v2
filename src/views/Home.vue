@@ -1,14 +1,12 @@
 <template>
   <div class="container pt-[100px] flex flex-col">
-    <!-- Header Section removed, handled in App.vue -->
+    
     <div class="flex flex-col items-start justify-between w-full gap-[120px]">
       <div class="flex flex-col gap-[30px] w-full mx-auto">
-        <!-- <IdLogoText class="h-[20px] w-[191px] fill-id-medium-grey" /> -->
-        <TypingText
-          v-model:showGoDigital="showGoDigital"
+        
+        <GlitchingText
           :text="'Bespoke Digital Marketing that Captivates and Converts'"
           class="w-full"
-          ref="typingTextRef"
         />
       </div>
       <div class="w-full flex justify-end">
@@ -48,7 +46,7 @@ import SvgScrollAnimation from '../components/SvgScrollAnimation.vue';
 import ArrowButton from '../components/ArrowButton.vue';
 import ProjectCard from '../components/ProjectCard.vue';
 import ChevronDown from '../assets/id-chevron-down.svg';
-import TypingText from '../components/TypingText.vue';
+import GlitchingText from '../components/GlitchingText.vue';
 
 // SVGs
 import StopAnim from '../assets/stop-blending-in/stop.svg';
@@ -60,14 +58,10 @@ import ToAnim from '../assets/stop-blending-in/to.svg';
 import TimeAnim from '../assets/stop-blending-in/time.svg';
 import ItsAnim from '../assets/stop-blending-in/its.svg';
 
-import { inject, ref, onMounted, computed } from 'vue';
 
-const globalEmitter = inject('globalEmitter');
-const goDigitalButtonClass = computed(() => showGoDigital.value ? 'fade-in' : '');
+import { ref, onMounted } from 'vue';
 
 const showGoDigital = ref(false);
-
-// Removed console logs for production cleanliness
 
 // Animation SVGs
 const svgs = [
@@ -105,7 +99,7 @@ onMounted(async () => {
       };
     });
   } catch (e) {
-    console.error('Error fetching projects:', e);
+    // handle error (optional: log or ignore)
   }
 });
 
@@ -121,23 +115,7 @@ onMounted(() => {
   window.addEventListener('scroll', handleFirstScroll, { once: true });
 });
 
-const typingTextRef = ref();
 
-onMounted(() => {
-  if (globalEmitter) {
-    globalEmitter.on('reset-animation', () => {
-      if (typingTextRef.value && typeof typingTextRef.value.resetAnimation === 'function') {
-        typingTextRef.value.resetAnimation();
-      }
-    });
-  }
-});
-
-function onResetAnimation() {
-  if (typingTextRef.value && typeof typingTextRef.value.resetAnimation === 'function') {
-    typingTextRef.value.resetAnimation();
-  }
-}
 </script>
 
 <style scoped>

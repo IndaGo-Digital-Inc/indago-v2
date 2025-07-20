@@ -145,7 +145,7 @@ async function fetchProjects() {
 			const mediaPromises = Array.from(logoIds).map((id) =>
 				fetch(`/wp-json/wp/v2/media/${id}`).then((res) => {
 					if (!res.ok) {
-						console.error(`Failed to fetch media for ID: ${id}`);
+						// ...existing code...
 						return null; // Return null on failure to not break Promise.all
 					}
 					return res.json();
