@@ -1,6 +1,6 @@
 {
   "src/main.ts": {
-    "file": "assets/main-BP4wT_ay.js",
+    "file": "assets/main-Brkr2xT5.js",
     "name": "main",
     "src": "src/main.ts",
     "isEntry": true,
@@ -12,11 +12,11 @@
       "src/views/Services.vue"
     ],
     "css": [
-      "assets/main-BxdH5h-8.css"
+      "assets/main-YnMb-9Km.css"
     ]
   },
   "src/views/About.vue": {
-    "file": "assets/About-dy9_tWPT.js",
+    "file": "assets/About-ByBj3DpH.js",
     "name": "About",
     "src": "src/views/About.vue",
     "isDynamicEntry": true,
@@ -25,7 +25,7 @@
     ]
   },
   "src/views/Contact.vue": {
-    "file": "assets/Contact-DCi0oQQ0.js",
+    "file": "assets/Contact-J4KMKFu1.js",
     "name": "Contact",
     "src": "src/views/Contact.vue",
     "isDynamicEntry": true,
@@ -34,7 +34,7 @@
     ]
   },
   "src/views/Home.vue": {
-    "file": "assets/Home-B3rLisor.js",
+    "file": "assets/Home-BMw5v5uk.js",
     "name": "Home",
     "src": "src/views/Home.vue",
     "isDynamicEntry": true,
@@ -42,11 +42,11 @@
       "src/main.ts"
     ],
     "css": [
-      "assets/Home-Birj0fpt.css"
+      "assets/Home-BRIR8wat.css"
     ]
   },
   "src/views/Portfolio.vue": {
-    "file": "assets/Portfolio-BSMJxruu.js",
+    "file": "assets/Portfolio-B2YyUDJ6.js",
     "name": "Portfolio",
     "src": "src/views/Portfolio.vue",
     "isDynamicEntry": true,
@@ -55,7 +55,7 @@
     ]
   },
   "src/views/Services.vue": {
-    "file": "assets/Services-BtCD7njZ.js",
+    "file": "assets/Services-BD7W8eI8.js",
     "name": "Services",
     "src": "src/views/Services.vue",
     "isDynamicEntry": true,
