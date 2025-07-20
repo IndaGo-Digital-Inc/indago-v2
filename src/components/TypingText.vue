@@ -38,9 +38,10 @@ const GLITCH_NUM_GLITCH_MIN = 1; // Minimum number of letters to glitch at once
 const GLITCH_NUM_GLITCH_MAX = 1; // Maximum number of letters to glitch at once
 const REMOVE_MIN_INTERVAL = 100; // Minimum interval for removing letters in milliseconds
 const REMOVE_MAX_INTERVAL = 500; // Maximum interval for removing letters in milliseconds
-const REMOVE_PROBABILITY = 0.5; // Probability of removing a letter on each interval
+const REMOVE_PROBABILITY = 0.6; // Probability of removing a letter on each interval
 const INITIAL_REMOVE_DELAY = 4000; // Initial delay before starting removing (ms)
-const GLITCH_STUCK_PROBABILITY = ref(0.4); // Probability to keep glitch class stuck
+const GLITCH_STUCK_PROB_MIN = 0;
+const GLITCH_STUCK_PROBABILITY = ref(0); // Probability to keep glitch class stuck
 
 const props = defineProps({
   text: String,
@@ -140,20 +141,6 @@ function startRemovingLetters() {
         }
       });
     });
-    // if (candidates.length === 0) {
-    //   // All letters removed, schedule restart in 1 minute
-    //   restartTimeout = setTimeout(() => {
-    //     mutableText.value = props.text;
-    //     displayedText.value = '';
-    //     glitchMap.value = Array(mutableText.value.length).fill('');
-    //     removedCount = 0;
-    //     currentRemoveMinInterval = REMOVE_MIN_INTERVAL;
-    //     letterVisible.value = Array(mutableText.value.length).fill(false);
-    //     showGoDigital.value = false;
-    //     startTyping();
-    //   }, 60000);
-    //   return;
-    // }
     const idx = candidates[Math.floor(Math.random() * candidates.length)];
     let removed = false;
     if (Math.random() < REMOVE_PROBABILITY) {
@@ -165,8 +152,50 @@ function startRemovingLetters() {
     if (removedCount === nonSpaceLetterCount.value && !showGoDigital.value) {
       showGoDigital.value = true;
       emit('update:showGoDigital', true);
+      // Start un-removing letters
+      startUnremovingLetters();
+      return;
     }
     if (removed) {
+      currentRemoveMinInterval += 0.1;
+    }
+    const nextInterval = currentRemoveMinInterval + Math.random() * (REMOVE_MAX_INTERVAL - currentRemoveMinInterval);
+    removeInterval = setTimeout(scheduleNext, nextInterval);
+  }
+  scheduleNext();
+}
+
+function startUnremovingLetters() {
+  if (removeInterval) clearTimeout(removeInterval);
+  function scheduleNext() {
+    // Find all removed, non-space letters
+    const candidates = [];
+    words.value.forEach((word, wIdx) => {
+      word.split('').forEach((char, cIdx) => {
+        const idx = charIndex(wIdx, cIdx);
+        if (!letterVisible.value[idx] && mutableText.value[idx] !== ' ') {
+          candidates.push(idx);
+        }
+      });
+    });
+    if (candidates.length === 0) {
+      // All letters restored, reset stuck probability to min
+      GLITCH_STUCK_PROBABILITY.value = GLITCH_STUCK_PROB_MIN;
+      // Restart removal cycle
+      removedCount = 0;
+      showGoDigital.value = false;
+      startRemovingLetters();
+      return;
+    }
+    const idx = candidates[Math.floor(Math.random() * candidates.length)];
+    let unremoved = false;
+    if (Math.random() < REMOVE_PROBABILITY) {
+      letterVisible.value[idx] = true;
+      unremoved = true;
+      // Decrement stuck probability by 0.01, but not below min
+      GLITCH_STUCK_PROBABILITY.value = Math.max(GLITCH_STUCK_PROB_MIN, GLITCH_STUCK_PROBABILITY.value - 0.01);
+    }
+    if (unremoved) {
       currentRemoveMinInterval += 0.1;
     }
     const nextInterval = currentRemoveMinInterval + Math.random() * (REMOVE_MAX_INTERVAL - currentRemoveMinInterval);
@@ -179,10 +208,10 @@ function startGlitching() {
   if (glitchInterval) clearInterval(glitchInterval);
   const minDelay = GLITCH_MIN_DELAY, maxDelay = GLITCH_MAX_DELAY;
   function glitchCycle() {
-    // Only non-space letters are candidates for glitch
+    // All non-space letters, regardless of visibility or glitch state, are candidates for glitch
     const totalLength = mutableText.value.length;
     let availableIndices = Array.from({ length: totalLength }, (_, i) => i)
-      .filter(i => glitchMap.value[i] !== 'glitch' && mutableText.value[i] !== ' ');
+      .filter(i => mutableText.value[i] !== ' ');
     if (availableIndices.length === 0) return;
     const numGlitch = Math.floor(Math.random() * (GLITCH_NUM_GLITCH_MAX - GLITCH_NUM_GLITCH_MIN + 1)) + GLITCH_NUM_GLITCH_MIN;
     const indices = [];
@@ -192,8 +221,6 @@ function startGlitching() {
     }
     indices.forEach(idx => {
       glitchMap.value[idx] = 'glitch';
-      // Increase stuck probability by 0.01 each glitch
-      GLITCH_STUCK_PROBABILITY.value = Math.min(0.7, GLITCH_STUCK_PROBABILITY.value + 0.01);
       // Remove glitch class after transition duration, but sometimes skip removal
       const el = document.querySelectorAll('.letter')[idx];
       let duration = GLITCH_MIN_TRANSITION;
@@ -251,6 +278,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Letter base styles */
 .letter {
   opacity: 0;
   transition: color var(--glitch-transition-duration, 0.3s) ease, opacity var(--glitch-transition-duration, 0.3s), transform var(--glitch-transition-duration, 0.3s) cubic-bezier(.68, -0.55, .27, 1.55);
@@ -270,14 +298,14 @@ onUnmounted(() => {
   text-transform: uppercase;
 }
 
-/* Use only the --glitch-transform variable for all glitch classes */
+/* Glitch effect for any letter, even removed */
 .letter.glitch {
+  opacity: 1 !important;
   transform: var(--glitch-transform);
   color: var(--glitch-color);
   border: var(--glitch-border);
   text-shadow: var(--glitch-text-shadow);
   border-radius: 100px;
-  opacity: 1;
 }
 
 .word-block {
