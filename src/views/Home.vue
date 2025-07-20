@@ -1,13 +1,17 @@
 <template>
   <div class="container pt-[100px] flex flex-col">
     <!-- Header Section -->
-    <div class="flex flex-col items-start justify-between w-full gap-[140px]">
+    <div class="flex flex-col items-start justify-between w-full gap-[120px]">
       <div class="flex flex-col gap-[30px] w-full mx-auto">
-        <IdLogoText class="h-[20px] w-[191px] fill-id-medium-grey" />
-        <TypingText :text="'Bespoke Digital Marketing that Captivates and Converts'" class="w-full" />
+        <!-- <IdLogoText class="h-[20px] w-[191px] fill-id-medium-grey" /> -->
+        <TypingText
+          v-model:showGoDigital="showGoDigital"
+          :text="'Bespoke Digital Marketing that Captivates and Converts'"
+          class="w-full"
+        />
       </div>
       <div class="w-full flex justify-end">
-        <ArrowButton>GO Digital</ArrowButton>
+        <ArrowButton v-if="showGoDigital" :class="goDigitalButtonClass">GO Digital</ArrowButton>
         <button class="w-[36px] hidden md:block">
           <ChevronDown class="fill-id-dark-grey" />
         </button>
@@ -38,13 +42,12 @@
 <script setup>
 // Components
 import SvgScrollAnimation from '../components/SvgScrollAnimation.vue';
-import TypingText from '../components/TypingText.vue';
 import ArrowButton from '../components/ArrowButton.vue';
 import ProjectCard from '../components/ProjectCard.vue';
+import ChevronDown from '../assets/id-chevron-down.svg';
+import TypingText from '../components/TypingText.vue';
 
 // SVGs
-import ChevronDown from '../assets/id-chevron-down.svg';
-import IdLogoText from '../assets/id-logo-text.svg';
 import StopAnim from '../assets/stop-blending-in/stop.svg';
 import BlendingAnim from '../assets/stop-blending-in/blending.svg';
 import InAnim from '../assets/stop-blending-in/in.svg';
@@ -54,7 +57,13 @@ import ToAnim from '../assets/stop-blending-in/to.svg';
 import TimeAnim from '../assets/stop-blending-in/time.svg';
 import ItsAnim from '../assets/stop-blending-in/its.svg';
 
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
+
+const goDigitalButtonClass = computed(() => showGoDigital.value ? 'fade-in' : '');
+
+const showGoDigital = ref(false);
+
+// Removed console logs for production cleanliness
 
 // Animation SVGs
 const svgs = [
@@ -96,3 +105,15 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style scoped>
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 2s forwards;
+}
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+</style>
