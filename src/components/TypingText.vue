@@ -20,7 +20,7 @@
 
 <script setup>
 
-import { ref, onMounted, watch, computed, onUnmounted } from 'vue';
+import { ref, onMounted, watch, computed, onUnmounted, defineExpose } from 'vue';
 // === CONSTANTS ===
 const TYPING_SPEED_DEFAULT = 40; // Default typing speed in milliseconds
 const GLITCH_MIN_DELAY = 300; // Minimum delay between glitch cycles in milliseconds
@@ -40,7 +40,7 @@ const REMOVE_MIN_INTERVAL = 100; // Minimum interval for removing letters in mil
 const REMOVE_MAX_INTERVAL = 500; // Maximum interval for removing letters in milliseconds
 const REMOVE_PROBABILITY = 0.5; // Probability of removing a letter on each interval
 const INITIAL_REMOVE_DELAY = 4000; // Initial delay before starting removing (ms)
-const GLITCH_STUCK_PROBABILITY = 0.3; // Probability to keep glitch class stuck
+const GLITCH_STUCK_PROBABILITY = ref(0.4); // Probability to keep glitch class stuck
 
 const props = defineProps({
   text: String,
@@ -140,20 +140,20 @@ function startRemovingLetters() {
         }
       });
     });
-    if (candidates.length === 0) {
-      // All letters removed, schedule restart in 1 minute
-      restartTimeout = setTimeout(() => {
-        mutableText.value = props.text;
-        displayedText.value = '';
-        glitchMap.value = Array(mutableText.value.length).fill('');
-        removedCount = 0;
-        currentRemoveMinInterval = REMOVE_MIN_INTERVAL;
-        letterVisible.value = Array(mutableText.value.length).fill(false);
-        showGoDigital.value = false;
-        startTyping();
-      }, 60000);
-      return;
-    }
+    // if (candidates.length === 0) {
+    //   // All letters removed, schedule restart in 1 minute
+    //   restartTimeout = setTimeout(() => {
+    //     mutableText.value = props.text;
+    //     displayedText.value = '';
+    //     glitchMap.value = Array(mutableText.value.length).fill('');
+    //     removedCount = 0;
+    //     currentRemoveMinInterval = REMOVE_MIN_INTERVAL;
+    //     letterVisible.value = Array(mutableText.value.length).fill(false);
+    //     showGoDigital.value = false;
+    //     startTyping();
+    //   }, 60000);
+    //   return;
+    // }
     const idx = candidates[Math.floor(Math.random() * candidates.length)];
     let removed = false;
     if (Math.random() < REMOVE_PROBABILITY) {
@@ -192,6 +192,8 @@ function startGlitching() {
     }
     indices.forEach(idx => {
       glitchMap.value[idx] = 'glitch';
+      // Increase stuck probability by 0.01 each glitch
+      GLITCH_STUCK_PROBABILITY.value = Math.min(0.7, GLITCH_STUCK_PROBABILITY.value + 0.01);
       // Remove glitch class after transition duration, but sometimes skip removal
       const el = document.querySelectorAll('.letter')[idx];
       let duration = GLITCH_MIN_TRANSITION;
@@ -201,7 +203,7 @@ function startGlitching() {
         duration = parseFloat(durStr);
       }
       setTimeout(() => {
-        if (Math.random() > GLITCH_STUCK_PROBABILITY) {
+        if (Math.random() > GLITCH_STUCK_PROBABILITY.value) {
           glitchMap.value[idx] = '';
         }
         // else: leave glitch class stuck
@@ -212,6 +214,20 @@ function startGlitching() {
   }
   glitchCycle();
 }
+
+function resetAnimation() {
+  mutableText.value = props.text;
+  displayedText.value = '';
+  glitchMap.value = Array(mutableText.value.length).fill('');
+  removedCount = 0;
+  currentRemoveMinInterval = REMOVE_MIN_INTERVAL;
+  letterVisible.value = Array(mutableText.value.length).fill(false);
+  showGoDigital.value = false;
+  startTyping();
+  startGlitching();
+}
+
+defineExpose({ resetAnimation });
 
 
 

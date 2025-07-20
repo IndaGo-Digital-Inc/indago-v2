@@ -1,6 +1,6 @@
 <template>
   <div class="container pt-[100px] flex flex-col">
-    <!-- Header Section -->
+    <!-- Header Section removed, handled in App.vue -->
     <div class="flex flex-col items-start justify-between w-full gap-[120px]">
       <div class="flex flex-col gap-[30px] w-full mx-auto">
         <!-- <IdLogoText class="h-[20px] w-[191px] fill-id-medium-grey" /> -->
@@ -8,10 +8,13 @@
           v-model:showGoDigital="showGoDigital"
           :text="'Bespoke Digital Marketing that Captivates and Converts'"
           class="w-full"
+          ref="typingTextRef"
         />
       </div>
       <div class="w-full flex justify-end">
-        <ArrowButton v-if="showGoDigital" :class="goDigitalButtonClass">GO Digital</ArrowButton>
+        <ArrowButton
+          :class="['go-digital-btn', (showGoDigital || userScrolled) ? 'fade-in' : 'fade-out']"
+        >GO Digital</ArrowButton>
         <button class="w-[36px] hidden md:block">
           <ChevronDown class="fill-id-dark-grey" />
         </button>
@@ -19,9 +22,9 @@
     </div>
 
     <!-- Animation & Description Section -->
-    <div class="flex flex-col items-start max-w-[342px] mx-auto pt-[150px]">
+    <div class="flex flex-col items-start max-w-[320px] mx-auto pt-[150px]">
       <SvgScrollAnimation :svgs="svgs" :deadSpace="0.2" />
-      <p class="pt-[60px]">
+      <p class="pt-[90px]">
         IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented digital marketing to fuel your online success.
       </p>
     </div>
@@ -57,8 +60,9 @@ import ToAnim from '../assets/stop-blending-in/to.svg';
 import TimeAnim from '../assets/stop-blending-in/time.svg';
 import ItsAnim from '../assets/stop-blending-in/its.svg';
 
-import { ref, onMounted, computed, watch } from 'vue';
+import { inject, ref, onMounted, computed } from 'vue';
 
+const globalEmitter = inject('globalEmitter');
 const goDigitalButtonClass = computed(() => showGoDigital.value ? 'fade-in' : '');
 
 const showGoDigital = ref(false);
@@ -104,16 +108,50 @@ onMounted(async () => {
     console.error('Error fetching projects:', e);
   }
 });
+
+const userScrolled = ref(false);
+
+onMounted(() => {
+  function handleFirstScroll() {
+    if (!userScrolled.value) {
+      userScrolled.value = true;
+      window.removeEventListener('scroll', handleFirstScroll);
+    }
+  }
+  window.addEventListener('scroll', handleFirstScroll, { once: true });
+});
+
+const typingTextRef = ref();
+
+onMounted(() => {
+  if (globalEmitter) {
+    globalEmitter.on('reset-animation', () => {
+      if (typingTextRef.value && typeof typingTextRef.value.resetAnimation === 'function') {
+        typingTextRef.value.resetAnimation();
+      }
+    });
+  }
+});
+
+function onResetAnimation() {
+  if (typingTextRef.value && typeof typingTextRef.value.resetAnimation === 'function') {
+    typingTextRef.value.resetAnimation();
+  }
+}
 </script>
 
 <style scoped>
-.fade-in {
+.go-digital-btn {
   opacity: 0;
-  animation: fadeIn 2s forwards;
+  pointer-events: none;
+  transition: opacity 2s;
 }
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
+.go-digital-btn.fade-in {
+  opacity: 1;
+  pointer-events: auto;
+}
+.go-digital-btn.fade-out {
+  opacity: 0;
+  pointer-events: none;
 }
 </style>
