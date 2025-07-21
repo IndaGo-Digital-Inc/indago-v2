@@ -86,31 +86,31 @@ function indago_digital_enqueue_vite_assets()
 			echo '<script type="module" src="https://localhost:5173/src/main.ts"></script>';
 		}
 		add_action('wp_head', 'vite_head_module_hook');
-	} else {
-		$manifest_path = get_template_directory() . '/dist/.vite/manifest.json';
-		if (file_exists($manifest_path)) {
-			$manifest = json_decode(file_get_contents($manifest_path), true);
-			if (is_array($manifest)) {
-				$entry_file = $manifest['src/main.ts']['file'] ?? null;
-				if ($entry_file) {
-					wp_enqueue_script(
-						'indago-digital-main',
-						get_template_directory_uri() . '/dist/' . $entry_file,
-						[],
-						null,
-						true
-					);
-				}
-				$css_file = $manifest['src/main.ts']['css'][0] ?? null;
-				if ($css_file) {
-					wp_enqueue_style(
-						'indago-digital-main',
-						get_template_directory_uri() . '/dist/' . $css_file
-					);
-				}
-			}
-		}
-	}
+	} //else {
+	// 	$manifest_path = get_template_directory() . '/dist/.vite/manifest.json';
+	// 	if (file_exists($manifest_path)) {
+	// 		$manifest = json_decode(file_get_contents($manifest_path), true);
+	// 		if (is_array($manifest)) {
+	// 			$entry_file = $manifest['src/main.ts']['file'] ?? null;
+	// 			if ($entry_file) {
+	// 				wp_enqueue_script(
+	// 					'indago-digital-main',
+	// 					get_template_directory_uri() . '/dist/' . $entry_file,
+	// 					[],
+	// 					null,
+	// 					true
+	// 				);
+	// 			}
+	// 			$css_file = $manifest['src/main.ts']['css'][0] ?? null;
+	// 			if ($css_file) {
+	// 				wp_enqueue_style(
+	// 					'indago-digital-main',
+	// 					get_template_directory_uri() . '/dist/' . $css_file
+	// 				);
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 add_action('wp_enqueue_scripts', 'indago_digital_enqueue_vite_assets');
 
