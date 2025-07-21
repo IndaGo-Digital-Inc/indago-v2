@@ -300,3 +300,42 @@ function indago_digital_register_client_taxonomy()
 	register_taxonomy('client', ['project'], $args);
 }
 add_action('init', 'indago_digital_register_client_taxonomy');
+
+/**
+ * Register the Headlines post type.
+ */
+function indago_digital_register_headlines_post_type() {
+    $labels = [
+        'name' => _x('Headlines', 'Post type general name', 'indagodigital'),
+        'singular_name' => _x('Headline', 'Post type singular name', 'indagodigital'),
+        'menu_name' => _x('Headlines', 'Admin Menu text', 'indagodigital'),
+        'name_admin_bar' => _x('Headline', 'Add New on Toolbar', 'indagodigital'),
+        'add_new' => __('Add New', 'indagodigital'),
+        'add_new_item' => __('Add New Headline', 'indagodigital'),
+        'new_item' => __('New Headline', 'indagodigital'),
+        'edit_item' => __('Edit Headline', 'indagodigital'),
+        'view_item' => __('View Headline', 'indagodigital'),
+        'all_items' => __('All Headlines', 'indagodigital'),
+    ];
+
+    $args = [
+        'labels' => $labels,
+        'public' => true,
+        'publicly_queryable' => true,
+        'show_ui' => true,
+        'show_in_menu' => true,
+        'query_var' => true,
+        'rewrite' => ['slug' => 'headline'],
+        'capability_type' => 'post',
+        'has_archive' => false,
+        'hierarchical' => false,
+        'menu_position' => 7,
+        'menu_icon' => 'dashicons-editor-alignleft',
+        'supports' => ['title', 'page-attributes'], // Only title and menu order
+        'show_in_rest' => true,
+        'rest_base' => 'headlines',
+        'rest_controller_class' => 'WP_REST_Posts_Controller',
+    ];
+    register_post_type('headline', $args);
+}
+add_action('init', 'indago_digital_register_headlines_post_type');

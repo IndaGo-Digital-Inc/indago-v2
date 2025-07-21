@@ -16,15 +16,41 @@
 
 <script setup>
 // Import Vue lifecycle and custom composables for glitch animation
-import { onMounted, nextTick } from 'vue';
+import { ref, watch, onMounted, nextTick, onBeforeUnmount } from 'vue';
 import { useGlitchLifecycle } from '../composables/useGlitchLifecycle.ts';
 import { useGlitchAnimation } from '../composables/useGlitchAnimation.ts';
 import { useLetterVisibility } from '../composables/useLetterVisibility.ts';
+import { useHeadlines } from '../composables/useHeadlines.ts';
 
-// Props: text to animate
-const props = defineProps({ text: String });
-// Split text into words and then into characters for per-letter animation
-const words = props.text.split(/\s+/).map(word => word.split(''));
+// Headlines composable: fetch and process all headlines from WP
+const { headlines, loading, error, fetchHeadlines } = useHeadlines();
+
+// Index of the current headline being animated
+const currentHeadlineIndex = ref(0);
+
+// Reactive words array for the current headline
+const words = ref([]);
+
+// Helper to update words from the current headline
+async function setWordsFromHeadline(idx) {
+    const ts = new Date().toISOString();
+    if (headlines.value.length > 0) {
+        console.log(`[${ts}] [setWordsFromHeadline] Switching to headline index:`, idx, 'headline:', headlines.value[idx]);
+        words.value = headlines.value[idx].words.map(word => Array.isArray(word) ? [...word] : word);
+    } else {
+        words.value = [];
+    }
+    await nextTick();
+    await nextTick();
+}
+
+// Fetch headlines and start animation on mount
+onMounted(async () => {
+    await fetchHeadlines();
+    if (headlines.value.length > 0) {
+        await startHeadlineAnimation();
+    }
+});
 
 // Glitch animation configuration (timings, colors, effects)
 const config = {
@@ -61,12 +87,11 @@ const {
     hidingMode,
     glitchPhase,
     setTargets,
-    resetAnimation: lifecycleResetAnimation
 } = useGlitchLifecycle(config);
 
 // Setup glitch animation and visibility logic
 const { applyGlitchStyle, applyGlitchesToCandidates } = useGlitchAnimation(config, hidingMode, glitchPhase);
-const { handleRevealLogic, handleHideLogic } = useLetterVisibility(config, targets, hidingMode, glitchPhase);
+const { handleRevealLogic, handleHideLogic } = useLetterVisibility(config, targets, hidingMode, glitchPhase, onHeadlineAnimationCompleteLocal);
 
 // Determine which letters are candidates for glitching and how many to glitch
 function getGlitchCandidatesAndRange() {
@@ -75,10 +100,6 @@ function getGlitchCandidatesAndRange() {
         glitchCandidates = targets.value.filter(el => el.classList.contains('visible'));
         min = Math.min(config.numGlitchMin, glitchCandidates.length);
         max = min;
-    } else if (glitchPhase.value === 'preRevealDelay') {
-        glitchCandidates = targets.value.filter(el => !el.classList.contains('visible'));
-        min = Math.min(config.numGlitchMax, glitchCandidates.length);
-        max = Math.min(config.numGlitchMax, glitchCandidates.length);
     } else if (!hidingMode.value) {
         glitchCandidates = targets.value.filter(el => !el.classList.contains('visible'));
         min = Math.min(config.numGlitchMin, glitchCandidates.length);
@@ -93,7 +114,11 @@ function getGlitchCandidatesAndRange() {
 
 // Main animation loop: applies glitches, handles reveal/hide logic, and schedules next cycle
 function glitchCycle() {
-    if (!targets.value.length) return;
+    const ts = new Date().toISOString();
+    if (!targets.value.length) {
+        console.log(`[${ts}] [glitchCycle] No targets, skipping.`);
+        return;
+    }
     // Count revealed and total letters for reveal/hide logic
     const revealedCount = targets.value.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
     const totalLetters = targets.value.filter(el => el.textContent && el.textContent.trim() !== '' && el.textContent.trim() !== ' ').length;
@@ -118,38 +143,68 @@ function startGlitching() {
     glitchCycle();
 }
 
-// Initialize targets and start animation on mount
-onMounted(async () => {
-    await nextTick();
-    // Select all letter elements for glitching
-    const letters = Array.from(document.querySelectorAll('.letter'));
-    setTargets(letters);
-    setTimeout(() => {
-        startGlitching();
-    }, 100);
-});
-
-// Top-level function to reset the glitch animation to initial state
+// Guard to prevent animation-complete callback from firing too soon after reset
+let animationResetGuard = false;
 function resetAnimation() {
-    lifecycleResetAnimation();
+    const ts = new Date().toISOString();
+    console.log(`[${ts}] [resetAnimation] Resetting animation`);
+    if (glitchInterval.value) {
+        clearTimeout(glitchInterval.value);
+        glitchInterval.value = null;
+    }
     if (targets.value && targets.value.length) {
         targets.value.forEach(el => el.classList.remove('visible'));
     }
-    startGlitching();
+    // Always start in reveal mode after switching headlines
+    if (typeof hidingMode !== 'undefined' && typeof glitchPhase !== 'undefined') {
+        hidingMode.value = false;
+        glitchPhase.value = 'normal';
+    }
+    // Block the animation-complete callback for 300ms after reset
+    animationResetGuard = true;
+    setTimeout(() => {
+        animationResetGuard = false;
+    }, 300);
 }
 
-// Expose resetAnimation for parent components to trigger a reset
-defineExpose({ resetAnimation });
+
+// Animation lifecycle orchestration
+async function startHeadlineAnimation() {
+    await setWordsFromHeadline(currentHeadlineIndex.value);
+    // Set targets after DOM update
+    const letters = Array.from(document.querySelectorAll('.letter'));
+    setTargets(letters);
+    resetAnimation();
+    // Start glitching after a short delay to ensure DOM is ready
+    setTimeout(() => {
+        const ts = new Date().toISOString();
+        startGlitching();
+        console.log(`[${ts}] [startHeadlineAnimation] Animation started.`);
+    }, 100);
+}
+
+// Called by glitch composable when animation is complete
+async function onHeadlineAnimationCompleteLocal() {
+    if (animationResetGuard) {
+        const ts = new Date().toISOString();
+        console.log(`[${ts}] [onHeadlineAnimationCompleteLocal] Animation complete callback ignored due to reset guard.`);
+        return;
+    }
+    const ts = new Date().toISOString();
+    console.log(`[${ts}] [onHeadlineAnimationCompleteLocal] Animation complete, switching headline.`);
+    if (headlines.value.length > 0) {
+        currentHeadlineIndex.value = (currentHeadlineIndex.value + 1) % headlines.value.length;
+        await startHeadlineAnimation();
+    }
+}
 </script>
 
 <style scoped>
-/* Layout for each word block in the headline */
 .word-block {
     display: inline-block;
     white-space: nowrap;
 }
 
-/* Base style for each letter, including transition for glitch effect */
 .letter {
     opacity: 0;
     display: inline-block;
@@ -157,12 +212,10 @@ defineExpose({ resetAnimation });
     transition: color var(--glitch-transition-duration, 0.3s) ease, opacity var(--glitch-transition-duration, 0.3s), transform var(--glitch-transition-duration, 0.3s) cubic-bezier(.68, -0.55, .27, 1.55);
 }
 
-/* Letters become visible when revealed */
 .visible {
     opacity: 1;
 }
 
-/* Glitch effect styles for animated letters */
 .letter.glitch,
 .glitch {
     opacity: 1;
