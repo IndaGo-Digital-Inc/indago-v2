@@ -6,7 +6,6 @@ export function useGlitchLifecycle(config) {
   const glitchInterval = ref(null);
   const targets = ref([]);
   const hidingMode = ref(false);
-  const glitchPhase = ref('normal');
 
   function setTargets(refsOrSelector) {
     if (typeof refsOrSelector === 'string') {
@@ -22,7 +21,6 @@ export function useGlitchLifecycle(config) {
       glitchInterval.value = null;
     }
     hidingMode.value = false;
-    glitchPhase.value = 'normal';
     if (targets.value && targets.value.length) {
       targets.value.forEach(el => el.classList.remove('visible'));
     }
@@ -39,7 +37,6 @@ export function useGlitchLifecycle(config) {
     glitchInterval,
     targets,
     hidingMode,
-    glitchPhase,
     setTargets,
     resetAnimation
   };

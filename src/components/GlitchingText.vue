@@ -15,33 +15,49 @@
 </template>
 
 <script setup>
-// Import Vue lifecycle and custom composables for glitch animation
-import { onMounted, nextTick } from 'vue';
+import { watch, onMounted, nextTick, computed } from 'vue';
 import { useGlitchLifecycle } from '../composables/useGlitchLifecycle';
 import { useGlitchAnimation } from '../composables/useGlitchAnimation';
 import { useLetterVisibility } from '../composables/useLetterVisibility';
 
-// Props: text to animate
 const props = defineProps({ text: String });
-// Split text into words and then into characters for per-letter animation
-const words = props.text.split(/\s+/).map(word => word.split(''));
+// Make words reactive to prop changes
+const words = computed(() =>
+  props.text
+    .split(/\s+/)
+    .filter(word => word.length > 0)
+    .map(word => word.split(''))
+);
 
+// Watch for headline text changes and reset animation
+watch(() => props.text, async () => {
+  await nextTick();
+  // Reselect all letter elements for glitching
+  const letters = Array.from(document.querySelectorAll('.letter'));
+  setTargets(letters);
+  if (targets.value && targets.value.length) {
+    targets.value.forEach(el => el.classList.remove('visible'));
+  }
+  setTimeout(() => {
+    startGlitching();
+  }, 100);
+});
 // Glitch animation configuration (timings, colors, effects)
 const config = {
-    minDelay: 300, // Minimum delay between glitch cycles (ms)
-    maxDelay: 800, // Maximum delay between glitch cycles (ms)
-    minTransition: 0.1, // Minimum transition duration (s)
-    maxTransition: 1,   // Maximum transition duration (s)
+    minDelay: 100, // Minimum delay between glitch cycles (ms)
+    maxDelay: 500, // Maximum delay between glitch cycles (ms)
+    minTransition: 0.2, // Minimum transition duration (s)
+    maxTransition: 0.8,   // Maximum transition duration (s)
     numGlitchMin: 1,    // Minimum number of letters to glitch per cycle
     numGlitchMax: 4,    // Maximum number of letters to glitch per cycle
     hideMultiplier: 5,  // Multiplier for glitch count in hiding mode
-    minRotate: 0,       // Minimum rotation (deg)
+    minRotate: -360,       // Minimum rotation (deg)
     maxRotate: 360,     // Maximum rotation (deg)
     minSkew: -45,       // Minimum skew (deg)
     maxSkew: 45,        // Maximum skew (deg)
     minScale: 0.5,      // Minimum scale
     maxScale: 1.5,      // Maximum scale
-    scaleProb: 0.8,     // Probability to apply scale
+    scaleProb: 1,     // Probability to apply scale
     colorPalette: [     // Weighted color palette for glitch effect
         { value: '#B6B6B6', prob: 0.6 },
         { value: '#4B0082', prob: 0.3 },
@@ -51,7 +67,7 @@ const config = {
     revealMax: 4,       // Maximum letters to reveal per cycle
     enableAdd: true,    // Toggle revealing letters
     enableRemove: true, // Toggle hiding letters
-    modeChangeDelay: 5000, // Delay before switching between reveal/hide modes (ms)
+    modeChangeDelay: 1000, // Delay before switching between reveal/hide modes (ms)
 };
 
 // Setup glitch lifecycle state and methods
@@ -68,18 +84,25 @@ const {
 const { applyGlitchStyle, applyGlitchesToCandidates } = useGlitchAnimation(config, hidingMode, glitchPhase);
 const { handleRevealLogic, handleHideLogic } = useLetterVisibility(config, targets, hidingMode, glitchPhase);
 
+
+// Watch for hidingMode changes and dispatch events for parent listeners
+let prevHidingMode = hidingMode.value;
+watch(hidingMode, (newVal) => {
+  // Dispatch when hiding mode is enabled
+  if (prevHidingMode === false && newVal === true) {
+    window.dispatchEvent(new Event('glitch-hiding-mode'));
+  }
+  prevHidingMode = newVal;
+});
+
+// Reactive watcher for all letters being hidden in hiding mode
+
+// Remove watcher for all letters being hidden
+
 // Determine which letters are candidates for glitching and how many to glitch
 function getGlitchCandidatesAndRange() {
     let glitchCandidates, min, max;
-    if (glitchPhase.value === 'preHideDelay') {
-        glitchCandidates = targets.value.filter(el => el.classList.contains('visible'));
-        min = Math.min(config.numGlitchMin, glitchCandidates.length);
-        max = min;
-    } else if (glitchPhase.value === 'preRevealDelay') {
-        glitchCandidates = targets.value.filter(el => !el.classList.contains('visible'));
-        min = Math.min(config.numGlitchMax, glitchCandidates.length);
-        max = Math.min(config.numGlitchMax, glitchCandidates.length);
-    } else if (!hidingMode.value) {
+    if (!hidingMode.value) {
         glitchCandidates = targets.value.filter(el => !el.classList.contains('visible'));
         min = Math.min(config.numGlitchMin, glitchCandidates.length);
         max = Math.min(config.numGlitchMax, glitchCandidates.length);
@@ -94,22 +117,24 @@ function getGlitchCandidatesAndRange() {
 // Main animation loop: applies glitches, handles reveal/hide logic, and schedules next cycle
 function glitchCycle() {
     if (!targets.value.length) return;
-    // Count revealed and total letters for reveal/hide logic
-    const revealedCount = targets.value.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
     const totalLetters = targets.value.filter(el => el.textContent && el.textContent.trim() !== '' && el.textContent.trim() !== ' ').length;
 
-    // Pick glitch candidates and apply glitch effect
+    // Animation step
     const { glitchCandidates, min, max } = getGlitchCandidatesAndRange();
     const count = Math.max(min, Math.floor(Math.random() * (max - min + 1)) + min);
     applyGlitchesToCandidates(glitchCandidates, count);
-
-    // Reveal/hide logic for animated text
     handleRevealLogic(totalLetters);
     handleHideLogic();
-
-    // Schedule next glitch cycle with random delay
     const nextDelay = config.minDelay + Math.random() * (config.maxDelay - config.minDelay);
     glitchInterval.value = setTimeout(glitchCycle, nextDelay);
+
+    // If animation is not finished, schedule next step
+    // if (!(hidingMode.value && targets.value.length > 0 && targets.value.every(el => !el.classList.contains('visible')))) {
+    // } else {
+        // Animation finished: all letters hidden
+        // console.log('Dispatching glitch-reveal-mode event to window');
+        // window.dispatchEvent(new Event('glitch-reveal-mode'));
+    // }
 }
 
 // Start the glitch animation loop, clearing any previous interval
@@ -120,16 +145,17 @@ function startGlitching() {
 
 // Initialize targets and start animation on mount
 onMounted(async () => {
-    await nextTick();
-    // Select all letter elements for glitching
-    const letters = Array.from(document.querySelectorAll('.letter'));
-    setTargets(letters);
-    setTimeout(() => {
-        startGlitching();
-    }, 100);
+  await nextTick();
+  // Reselect all letter elements for glitching
+  const letters = Array.from(document.querySelectorAll('.letter'));
+  setTargets(letters);
+  if (targets.value && targets.value.length) {
+    targets.value.forEach(el => el.classList.remove('visible'));
+  }
+  setTimeout(() => {
+    startGlitching();
+  }, 100);
 });
-
-// Top-level function to reset the glitch animation to initial state
 function resetAnimation() {
     lifecycleResetAnimation();
     if (targets.value && targets.value.length) {

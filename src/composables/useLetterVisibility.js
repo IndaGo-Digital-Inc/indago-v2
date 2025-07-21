@@ -3,7 +3,7 @@
 import { ref } from 'vue';
 import { updateLetterVisibility } from './useGlitchUtils';
 
-export function useLetterVisibility(config, targetsRef, hidingModeRef, glitchPhaseRef) {
+export function useLetterVisibility(config, targetsRef, hidingModeRef) {
   // Reveal hidden letters if allowed, and handle transition to hiding mode when all are revealed
   function handleRevealLogic(totalLetters) {
     if (!hidingModeRef.value && config.enableAdd) {
@@ -17,10 +17,10 @@ export function useLetterVisibility(config, targetsRef, hidingModeRef, glitchPha
       const revealedCountNow = targetsRef.value.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
       if (revealedCountNow === totalLetters) {
         window.dispatchEvent(new CustomEvent('showGoDigital'));
-        glitchPhaseRef.value = 'preHideDelay';
+        // glitchPhaseRef.value = 'preHideDelay';
         setTimeout(() => {
           hidingModeRef.value = true;
-          glitchPhaseRef.value = 'normal';
+          // glitchPhaseRef.value = 'normal';
         }, config.modeChangeDelay);
       }
     }
@@ -38,10 +38,10 @@ export function useLetterVisibility(config, targetsRef, hidingModeRef, glitchPha
       });
       const stillVisible = targetsRef.value.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
       if (stillVisible === 0) {
-        glitchPhaseRef.value = 'preRevealDelay';
+        // glitchPhaseRef.value = 'preRevealDelay';
         setTimeout(() => {
           hidingModeRef.value = false;
-          glitchPhaseRef.value = 'normal';
+          // glitchPhaseRef.value = 'normal';
         }, config.modeChangeDelay);
       }
     }

@@ -86,31 +86,7 @@ function indago_digital_enqueue_vite_assets()
 			echo '<script type="module" src="https://localhost:5173/src/main.ts"></script>';
 		}
 		add_action('wp_head', 'vite_head_module_hook');
-	} //else {
-	// 	$manifest_path = get_template_directory() . '/dist/.vite/manifest.json';
-	// 	if (file_exists($manifest_path)) {
-	// 		$manifest = json_decode(file_get_contents($manifest_path), true);
-	// 		if (is_array($manifest)) {
-	// 			$entry_file = $manifest['src/main.ts']['file'] ?? null;
-	// 			if ($entry_file) {
-	// 				wp_enqueue_script(
-	// 					'indago-digital-main',
-	// 					get_template_directory_uri() . '/dist/' . $entry_file,
-	// 					[],
-	// 					null,
-	// 					true
-	// 				);
-	// 			}
-	// 			$css_file = $manifest['src/main.ts']['css'][0] ?? null;
-	// 			if ($css_file) {
-	// 				wp_enqueue_style(
-	// 					'indago-digital-main',
-	// 					get_template_directory_uri() . '/dist/' . $css_file
-	// 				);
-	// 			}
-	// 		}
-	// 	}
-	// }
+	}
 }
 add_action('wp_enqueue_scripts', 'indago_digital_enqueue_vite_assets');
 
@@ -233,6 +209,44 @@ function indago_digital_register_project_post_type()
 }
 add_action('init', 'indago_digital_register_project_post_type');
 
+/**
+ * Register the Headlines post type for storing headline text strings.
+ */
+function indago_digital_register_headlines_post_type() {
+	$labels = [
+		'name' => _x('Headlines', 'Post type general name', 'indagodigital'),
+		'singular_name' => _x('Headline', 'Post type singular name', 'indagodigital'),
+		'menu_name' => _x('Headlines', 'Admin Menu text', 'indagodigital'),
+		'name_admin_bar' => _x('Headline', 'Add New on Toolbar', 'indagodigital'),
+		'add_new' => __('Add New', 'indagodigital'),
+		'add_new_item' => __('Add New Headline', 'indagodigital'),
+		'new_item' => __('New Headline', 'indagodigital'),
+		'edit_item' => __('Edit Headline', 'indagodigital'),
+		'view_item' => __('View Headline', 'indagodigital'),
+		'all_items' => __('All Headlines', 'indagodigital'),
+	];
+
+	$args = [
+		'labels' => $labels,
+		'public' => false,
+		'publicly_queryable' => false,
+		'show_ui' => true,
+		'show_in_menu' => true,
+		'query_var' => true,
+		'rewrite' => false,
+		'capability_type' => 'post',
+		'has_archive' => false,
+		'hierarchical' => false,
+		'menu_position' => 7,
+		'menu_icon' => 'dashicons-editor-aligncenter',
+		'supports' => ['title'],
+		'show_in_rest' => true,
+		'rest_base' => 'headlines',
+		'rest_controller_class' => 'WP_REST_Posts_Controller',
+	];
+	register_post_type('headline', $args);
+}
+add_action('init', 'indago_digital_register_headlines_post_type');
 function indago_digital_register_project_taxonomy()
 {
 	$labels = [

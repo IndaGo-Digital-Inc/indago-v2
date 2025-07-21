@@ -1,21 +1,23 @@
 <template>
   <!-- Main container for Home page content -->
-  <div class="container pt-[100px] flex flex-col">
+  <div class="container pt-[140px] flex flex-col">
     <!-- Hero section with glitching headline and call-to-action -->
     <div class="flex flex-col items-start justify-between w-full gap-[200px]">
       <div class="flex flex-col gap-[30px] w-full mx-auto">
         <!-- Animated glitching headline text -->
         <GlitchingText
+          v-if="glitchText"
           ref="glitchTextRef"
-          :text="'Bespoke Digital Marketing that Captivates'"
-          class="w-full"
+          :text="glitchText"
         />
+        <div v-else class="pt-2 text-xs text-gray-400">Loading headlines...</div>
+        <div v-if="error" class="pt-2 text-xs text-red-500">{{ error }}</div>
       </div>
       <div class="w-full flex justify-end">
         <!-- GO Digital button, fades in when animation completes or user scrolls -->
         <ArrowButton
           :class="['go-digital-btn', (showGoDigital || userScrolled) ? 'fade-in' : 'fade-out']"
-          @click="() => { console.log('GO Digital direct click'); resetGlitchText(); }"
+          @click="() => { resetGlitchText(); }"
         >GO Digital</ArrowButton>
         <!-- Down arrow for navigation cue -->
         <button class="w-[36px] hidden md:block">
@@ -46,103 +48,36 @@
 </template>
 
 <script setup>
-// Import core and UI components for the Home page
 import SvgScrollAnimation from '../components/SvgScrollAnimation.vue';
 import ArrowButton from '../components/ArrowButton.vue';
 import ProjectCard from '../components/ProjectCard.vue';
 import ChevronDown from '../assets/id-chevron-down.svg';
 import GlitchingText from '../components/GlitchingText.vue';
-// Import SVG assets for scroll animation
-import StopAnim from '../assets/stop-blending-in/stop.svg';
-import BlendingAnim from '../assets/stop-blending-in/blending.svg';
-import InAnim from '../assets/stop-blending-in/in.svg';
-import OutAnim from '../assets/stop-blending-in/out.svg';
-import StandAnim from '../assets/stop-blending-in/stand.svg';
-import ToAnim from '../assets/stop-blending-in/to.svg';
-import TimeAnim from '../assets/stop-blending-in/time.svg';
-import ItsAnim from '../assets/stop-blending-in/its.svg';
-import { ref, onMounted } from 'vue';
+import { ref, computed } from 'vue';
+import { useHeadlines } from '../composables/useHeadlines.js';
+import { useProjects } from '../composables/useProjects.js';
+import { useHeroUI } from '../composables/useHeroUI.js';
+import { useSVGs } from '../composables/useSVGs.js';
 
-// Ref for GlitchingText component to control animation
+// Glitch headline logic
 const glitchTextRef = ref(null);
-
-// Resets the glitch animation to initial state
+const { headlines, error } = useHeadlines();
+const glitchText = computed(() => {
+  if (Array.isArray(headlines.value) && headlines.value.length > 0) {
+    return headlines.value[0] || '';
+  }
+  return '';
+});
 function resetGlitchText() {
   if (glitchTextRef.value && glitchTextRef.value.resetAnimation) {
     glitchTextRef.value.resetAnimation();
   }
 }
 
-// Controls visibility of the GO DIGITAL button
-const showGoDigital = ref(false);
-
-// SVGs used for scroll-driven animation sequence
-const svgs = [
-  { component: ItsAnim, color: 'fill-id-purple' },
-  { component: TimeAnim, color: 'fill-id-purple' },
-  { component: ToAnim, color: 'fill-id-purple' },
-  { component: StandAnim, color: 'fill-id-purple' },
-  { component: OutAnim, color: 'fill-id-purple' },
-];
-
-// State for fetched WordPress projects
-const projects = ref([]);
-
-// Fetch project data from WordPress REST API on mount
-onMounted(async () => {
-  try {
-    const res = await fetch('https://indago-v2.local/wp-json/wp/v2/projects?_embed&orderby=menu_order&order=asc');
-    const data = await res.json();
-    projects.value = data.map(project => {
-      let image = '';
-      if (project._embedded?.['wp:featuredmedia']?.[0]) {
-        image = project._embedded['wp:featuredmedia'][0].source_url;
-      }
-      let subtitle = '';
-      if (project._embedded?.['wp:term']?.[0]) {
-        subtitle = project._embedded['wp:term'][0].map(cat => cat.name).join(', ');
-      }
-      return {
-        title: project.title.rendered,
-        subtitle,
-        image,
-      };
-    });
-  } catch (e) {
-    // Error handling for failed fetch (optional)
-  }
-});
-
-// Tracks if the user has scrolled the page
-const userScrolled = ref(false);
-
-// Setup scroll and custom event listeners on mount
-onMounted(() => {
-  // Detect first scroll to trigger UI changes
-  function handleFirstScroll() {
-    if (!userScrolled.value) {
-      userScrolled.value = true;
-      window.removeEventListener('scroll', handleFirstScroll);
-    }
-  }
-  window.addEventListener('scroll', handleFirstScroll, { once: true });
-
-  // Show GO DIGITAL button when glitch animation completes
-  window.addEventListener('showGoDigital', () => {
-    showGoDigital.value = true;
-  });
-
-  // Listen for global glitch reset event
-  window.addEventListener('reset-glitch', resetGlitchText);
-});
-
-// Cleanup event listeners on unmount
-import { onUnmounted } from 'vue';
-onUnmounted(() => {
-  window.removeEventListener('reset-glitch', resetGlitchText);
-});
-
-
+// Use composables for projects, hero UI, and SVGs
+const { projects } = useProjects();
+const { userScrolled, showGoDigital } = useHeroUI(resetGlitchText);
+const { svgs } = useSVGs();
 </script>
 
 <style scoped>

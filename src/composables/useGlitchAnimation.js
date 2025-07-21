@@ -3,10 +3,10 @@
 import { ref } from 'vue';
 import { pickWeightedColor, pickRandomIndices } from './useGlitchUtils';
 
-export function useGlitchAnimation(config, hidingModeRef, glitchPhaseRef) {
+export function useGlitchAnimation(config, hidingModeRef) {
   // Apply random glitch styles to a letter element
   function applyGlitchStyle(el) {
-    const color = pickWeightedColor(config, hidingModeRef.value, glitchPhaseRef.value);
+    const color = pickWeightedColor(config, hidingModeRef.value);
     const transitionDuration = (config.minTransition + Math.random() * (config.maxTransition - config.minTransition)).toFixed(2) + 's';
     const rotX = (config.minRotate + Math.random() * (config.maxRotate - config.minRotate)).toFixed(2) + 'deg';
     const rotY = (config.minRotate + Math.random() * (config.maxRotate - config.minRotate)).toFixed(2) + 'deg';
