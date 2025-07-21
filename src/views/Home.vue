@@ -1,9 +1,10 @@
 <template>
-  <!-- Header is included in App.vue, not here -->
+  <!-- Main container for Home page content -->
   <div class="container pt-[100px] flex flex-col">
-    
+    <!-- Hero section with glitching headline and call-to-action -->
     <div class="flex flex-col items-start justify-between w-full gap-[120px]">
       <div class="flex flex-col gap-[30px] w-full mx-auto">
+        <!-- Animated glitching headline text -->
         <GlitchingText
           ref="glitchTextRef"
           :text="'Bespoke Digital Marketing that Captivates and Converts'"
@@ -11,26 +12,28 @@
         />
       </div>
       <div class="w-full flex justify-end">
+        <!-- GO Digital button, fades in when animation completes or user scrolls -->
         <ArrowButton
           :class="['go-digital-btn', (showGoDigital || userScrolled) ? 'fade-in' : 'fade-out']"
           @click="() => { console.log('GO Digital direct click'); resetGlitchText(); }"
         >GO Digital</ArrowButton>
+        <!-- Down arrow for navigation cue -->
         <button class="w-[36px] hidden md:block">
           <ChevronDown class="fill-id-dark-grey" />
         </button>
       </div>
     </div>
-
-    <!-- Animation & Description Section -->
+    <!-- SVG scroll animation and description section -->
     <div class="flex flex-col items-start max-w-[320px] mx-auto pt-[150px]">
+      <!-- Animated SVG sequence based on scroll position -->
       <SvgScrollAnimation :svgs="svgs" :deadSpace="0.2" />
       <p class="pt-[90px]">
         IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented digital marketing to fuel your online success.
       </p>
     </div>
-
-    <!-- Projects Section -->
+    <!-- Projects showcase section -->
     <div class="project-wrapper flex flex-col pt-[60px] mb-[120px]">
+      <!-- Render each project card from fetched data -->
       <ProjectCard
         v-for="(project, idx) in projects"
         :key="idx"
@@ -43,14 +46,13 @@
 </template>
 
 <script setup>
-// Components
+// Import core and UI components for the Home page
 import SvgScrollAnimation from '../components/SvgScrollAnimation.vue';
 import ArrowButton from '../components/ArrowButton.vue';
 import ProjectCard from '../components/ProjectCard.vue';
 import ChevronDown from '../assets/id-chevron-down.svg';
 import GlitchingText from '../components/GlitchingText.vue';
-
-// SVGs
+// Import SVG assets for scroll animation
 import StopAnim from '../assets/stop-blending-in/stop.svg';
 import BlendingAnim from '../assets/stop-blending-in/blending.svg';
 import InAnim from '../assets/stop-blending-in/in.svg';
@@ -59,26 +61,23 @@ import StandAnim from '../assets/stop-blending-in/stand.svg';
 import ToAnim from '../assets/stop-blending-in/to.svg';
 import TimeAnim from '../assets/stop-blending-in/time.svg';
 import ItsAnim from '../assets/stop-blending-in/its.svg';
-
-
 import { ref, onMounted } from 'vue';
 
-// Ref for GlitchingText
+// Ref for GlitchingText component to control animation
 const glitchTextRef = ref(null);
 
+// Resets the glitch animation to initial state
 function resetGlitchText() {
   if (glitchTextRef.value && glitchTextRef.value.resetAnimation) {
     glitchTextRef.value.resetAnimation();
   }
 }
 
+// Controls visibility of the GO DIGITAL button
 const showGoDigital = ref(false);
 
-// Animation SVGs
+// SVGs used for scroll-driven animation sequence
 const svgs = [
-  // { component: StopAnim, color: 'fill-id-purple' },
-  // { component: BlendingAnim, color: 'fill-id-purple' },
-  // { component: InAnim, color: 'fill-id-purple' },
   { component: ItsAnim, color: 'fill-id-purple' },
   { component: TimeAnim, color: 'fill-id-purple' },
   { component: ToAnim, color: 'fill-id-purple' },
@@ -86,10 +85,10 @@ const svgs = [
   { component: OutAnim, color: 'fill-id-purple' },
 ];
 
-// Projects state
+// State for fetched WordPress projects
 const projects = ref([]);
 
-// Fetch projects from WP REST API
+// Fetch project data from WordPress REST API on mount
 onMounted(async () => {
   try {
     const res = await fetch('https://indago-v2.local/wp-json/wp/v2/projects?_embed&orderby=menu_order&order=asc');
@@ -110,13 +109,16 @@ onMounted(async () => {
       };
     });
   } catch (e) {
-    // handle error (optional: log or ignore)
+    // Error handling for failed fetch (optional)
   }
 });
 
+// Tracks if the user has scrolled the page
 const userScrolled = ref(false);
 
+// Setup scroll and custom event listeners on mount
 onMounted(() => {
+  // Detect first scroll to trigger UI changes
   function handleFirstScroll() {
     if (!userScrolled.value) {
       userScrolled.value = true;
@@ -125,15 +127,16 @@ onMounted(() => {
   }
   window.addEventListener('scroll', handleFirstScroll, { once: true });
 
-  // Listen for the custom event to show the GO DIGITAL button
+  // Show GO DIGITAL button when glitch animation completes
   window.addEventListener('showGoDigital', () => {
     showGoDigital.value = true;
   });
 
-  // Listen for the global glitch reset event
+  // Listen for global glitch reset event
   window.addEventListener('reset-glitch', resetGlitchText);
 });
 
+// Cleanup event listeners on unmount
 import { onUnmounted } from 'vue';
 onUnmounted(() => {
   window.removeEventListener('reset-glitch', resetGlitchText);
@@ -143,6 +146,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Styles for the GO DIGITAL button fade-in/fade-out animation */
 .go-digital-btn {
   opacity: 0;
   pointer-events: none;

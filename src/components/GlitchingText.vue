@@ -1,23 +1,29 @@
 <template>
+    <!-- GlitchingText: Animated headline with per-letter glitch/reveal/hide effects -->
     <h1 class="w-full">
+        <!-- Render each word as a block for layout control -->
         <span v-for="(word, wIdx) in words" :key="wIdx" class="word-block">
-            <span v-for="(char, cIdx) in word" :key="cIdx" class="letter letter-upper">{{ char === ' ' ? '\u00A0' : char
-            }}</span>
+            <!-- Render each character as a span for individual glitching -->
+            <span v-for="(char, cIdx) in word" :key="cIdx" class="letter letter-upper">
+                {{ char === ' ' ? '\u00A0' : char }}
+            </span>
         </span>
     </h1>
 </template>
 
 <script setup>
-// Vue 3 GlitchingText Component
-// Animated text with glitch/reveal/hide cycles and tunable config
+// Import Vue lifecycle and custom composables for glitch animation
+import { onMounted, nextTick } from 'vue';
+import { useGlitchLifecycle } from '../composables/useGlitchLifecycle';
+import { useGlitchAnimation } from '../composables/useGlitchAnimation';
+import { useLetterVisibility } from '../composables/useLetterVisibility';
 
-const props = defineProps({
-    text: String
-});
-// Split text into words and then into characters
+// Props: text to animate
+const props = defineProps({ text: String });
+// Split text into words and then into characters for per-letter animation
 const words = props.text.split(/\s+/).map(word => word.split(''));
 
-// Animation and glitch effect configuration
+// Glitch animation configuration (timings, colors, effects)
 const config = {
     minDelay: 300, // Minimum delay between glitch cycles (ms)
     maxDelay: 800, // Maximum delay between glitch cycles (ms)
@@ -44,198 +50,75 @@ const config = {
     enableRemove: true, // Toggle hiding letters
     modeChangeDelay: 5000, // Delay before switching between reveal/hide modes (ms)
 };
-let glitchInterval = null; // Stores the current glitch cycle timeout
-let targets = [];          // Array of letter elements
-let hidingMode = false;    // Whether currently in hiding mode
-let glitchPhase = 'normal'; // 'normal', 'preHideDelay', 'preRevealDelay'
 
-// Select a color from the palette using weighted probabilities for glitch effect
-// Returns purple in hiding mode, yellow in pre-hide delay, otherwise weighted random
-function pickWeightedColor() {
-    // If in hiding mode, always return purple
-    if (hidingMode && glitchPhase === 'normal') return '#4B0082';
-    if (glitchPhase === 'preHideDelay') return '#FFE412';
-    const r = Math.random();
-    let acc = 0;
-    for (const c of config.colorPalette) {
-        acc += c.prob;
-        if (r < acc) return c.value;
-    }
-    return config.colorPalette[config.colorPalette.length - 1].value;
-}
+// Setup glitch lifecycle state and methods
+const {
+    glitchInterval,
+    targets,
+    hidingMode,
+    glitchPhase,
+    setTargets,
+    resetAnimation: lifecycleResetAnimation
+} = useGlitchLifecycle(config);
 
-// Apply random glitch styles (transform, color, shadow, transition) to a letter element
-// Adds 'glitch' class for animation, then removes it after transition
-function applyGlitchStyle(el) {
-    const color = pickWeightedColor();
-    const transitionDuration = (config.minTransition + Math.random() * (config.maxTransition - config.minTransition)).toFixed(2) + 's';
-    const rotX = (config.minRotate + Math.random() * (config.maxRotate - config.minRotate)).toFixed(2) + 'deg';
-    const rotY = (config.minRotate + Math.random() * (config.maxRotate - config.minRotate)).toFixed(2) + 'deg';
-    const rotZ = (config.minRotate + Math.random() * (config.maxRotate - config.minRotate)).toFixed(2) + 'deg';
-    const skewX = (config.minSkew + Math.random() * (config.maxSkew - config.minSkew)).toFixed(2) + 'deg';
-    const skewY = (config.minSkew + Math.random() * (config.maxSkew - config.minSkew)).toFixed(2) + 'deg';
-    let scale = 1;
-    if (Math.random() < config.scaleProb) {
-        scale = parseFloat((config.minScale + Math.random() * (config.maxScale - config.minScale)).toFixed(2));
-    }
+// Setup glitch animation and visibility logic
+const { applyGlitchStyle, applyGlitchesToCandidates } = useGlitchAnimation(config, hidingMode, glitchPhase);
+const { handleRevealLogic, handleHideLogic } = useLetterVisibility(config, targets, hidingMode, glitchPhase);
 
-    const transform = `rotateX(${rotX}) rotateY(${rotY}) rotateZ(${rotZ}) skewX(${skewX}) skewY(${skewY}) scale(${scale})`;
-    el.style.setProperty('--glitch-transform', transform);
-    el.style.setProperty('--glitch-color', color);
-    el.style.setProperty('--glitch-transition-duration', transitionDuration);
-    // Use the same color for all text shadows
-    const shadow1 = `0 0 16px ${color}`;
-    const shadow2 = `0 0 8px ${color}`;
-    const shadow3 = `0 0 2px ${color}`;
-    el.style.setProperty('--glitch-text-shadow', `${shadow1}, ${shadow2}, ${shadow3}`);
-    el.classList.add('glitch');
-    setTimeout(() => {
-        el.classList.remove('glitch');
-    }, parseFloat(transitionDuration) * 1000);
-}
-
-// Reveal or hide a random subset of candidate letters
-// Used for both revealing and hiding letters during animation cycles
-function updateLetterVisibility({ candidates, min, max, action }) {
-    if (!candidates.length) return;
-    const count = Math.min(candidates.length, Math.floor(Math.random() * (max - min + 1)) + min);
-    const indices = [];
-    while (indices.length < count && candidates.length > 0) {
-        const idx = Math.floor(Math.random() * candidates.length);
-        if (!indices.includes(idx)) indices.push(idx);
-    }
-    indices.forEach(idx => {
-        if (action === 'reveal') {
-            candidates[idx].classList.add('visible');
-        } else if (action === 'hide') {
-            candidates[idx].classList.remove('visible');
-        }
-    });
-}
-
-import { onMounted, onUnmounted, nextTick } from 'vue';
-// Determine which letters are candidates for glitching and the min/max count
-// Logic depends on current phase and hiding mode
+// Determine which letters are candidates for glitching and how many to glitch
 function getGlitchCandidatesAndRange() {
     let glitchCandidates, min, max;
-    if (glitchPhase === 'preHideDelay') {
-        glitchCandidates = targets.filter(el => el.classList.contains('visible'));
+    if (glitchPhase.value === 'preHideDelay') {
+        glitchCandidates = targets.value.filter(el => el.classList.contains('visible'));
         min = Math.min(config.numGlitchMin, glitchCandidates.length);
         max = min;
-    } else if (glitchPhase === 'preRevealDelay') {
-        glitchCandidates = targets.filter(el => !el.classList.contains('visible'));
+    } else if (glitchPhase.value === 'preRevealDelay') {
+        glitchCandidates = targets.value.filter(el => !el.classList.contains('visible'));
         min = Math.min(config.numGlitchMax, glitchCandidates.length);
         max = Math.min(config.numGlitchMax, glitchCandidates.length);
-    } else if (!hidingMode) {
-        glitchCandidates = targets.filter(el => !el.classList.contains('visible'));
+    } else if (!hidingMode.value) {
+        glitchCandidates = targets.value.filter(el => !el.classList.contains('visible'));
         min = Math.min(config.numGlitchMin, glitchCandidates.length);
         max = Math.min(config.numGlitchMax, glitchCandidates.length);
     } else {
-        glitchCandidates = targets.filter(el => el.classList.contains('visible'));
+        glitchCandidates = targets.value.filter(el => el.classList.contains('visible'));
         min = Math.min(config.numGlitchMin * config.hideMultiplier, glitchCandidates.length);
         max = Math.min(config.numGlitchMax * config.hideMultiplier, glitchCandidates.length);
     }
     return { glitchCandidates, min, max };
 }
 
-// Pick 'count' unique random indices from a list of given length
-function pickRandomIndices(length, count) {
-    const indices = [];
-    while (indices.length < count) {
-        const idx = Math.floor(Math.random() * length);
-        if (!indices.includes(idx)) indices.push(idx);
-    }
-    return indices;
-}
-
-// Apply glitch styles to a random subset of candidate letters
-function applyGlitchesToCandidates(candidates, count) {
-    if (candidates.length > 0 && count > 0) {
-        const indices = pickRandomIndices(candidates.length, count);
-        for (let i = 0; i < indices.length; i++) {
-            applyGlitchStyle(candidates[indices[i]]);
-        }
-    }
-}
-
-// Reveal hidden letters if allowed, and handle transition to hiding mode when all are revealed
-function handleRevealLogic(totalLetters) {
-    if (!hidingMode && config.enableAdd) {
-        const revealCandidates = targets.filter(el => !el.classList.contains('visible') && el.classList.contains('glitch'));
-        updateLetterVisibility({
-            candidates: revealCandidates,
-            min: config.revealMin,
-            max: config.revealMax,
-            action: 'reveal'
-        });
-        const revealedCountNow = targets.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
-        if (revealedCountNow === totalLetters) {
-            window.dispatchEvent(new CustomEvent('showGoDigital'));
-            glitchPhase = 'preHideDelay';
-            setTimeout(() => {
-                hidingMode = true;
-                glitchPhase = 'normal';
-            }, config.modeChangeDelay);
-        }
-    }
-}
-
-// Hide visible letters if allowed, and handle transition to reveal mode when all are hidden
-function handleHideLogic() {
-    if (hidingMode && config.enableRemove) {
-        const hideCandidates = targets.filter(el => el.classList.contains('visible') && el.classList.contains('glitch'));
-        updateLetterVisibility({
-            candidates: hideCandidates,
-            min: config.revealMin,
-            max: config.revealMax,
-            action: 'hide'
-        });
-        const stillVisible = targets.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
-        if (stillVisible === 0) {
-            glitchPhase = 'preRevealDelay';
-            setTimeout(() => {
-                hidingMode = false;
-                glitchPhase = 'normal';
-            }, config.modeChangeDelay);
-        }
-    }
-}
-
 // Main animation loop: applies glitches, handles reveal/hide logic, and schedules next cycle
 function glitchCycle() {
-    if (!targets.length) return;
-    const revealedCount = targets.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
-    const totalLetters = targets.filter(el => el.textContent && el.textContent.trim() !== '' && el.textContent.trim() !== ' ').length;
+    if (!targets.value.length) return;
+    // Count revealed and total letters for reveal/hide logic
+    const revealedCount = targets.value.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
+    const totalLetters = targets.value.filter(el => el.textContent && el.textContent.trim() !== '' && el.textContent.trim() !== ' ').length;
 
+    // Pick glitch candidates and apply glitch effect
     const { glitchCandidates, min, max } = getGlitchCandidatesAndRange();
     const count = Math.max(min, Math.floor(Math.random() * (max - min + 1)) + min);
     applyGlitchesToCandidates(glitchCandidates, count);
 
+    // Reveal/hide logic for animated text
     handleRevealLogic(totalLetters);
     handleHideLogic();
 
+    // Schedule next glitch cycle with random delay
     const nextDelay = config.minDelay + Math.random() * (config.maxDelay - config.minDelay);
-    glitchInterval = setTimeout(glitchCycle, nextDelay);
-}
-
-// Set the 'targets' array to all letter elements, from selector or refs
-function setTargets(refsOrSelector) {
-    if (typeof refsOrSelector === 'string') {
-        targets = Array.from(document.querySelectorAll(refsOrSelector));
-    } else if (Array.isArray(refsOrSelector)) {
-        targets = refsOrSelector.map(r => r instanceof HTMLElement ? r : r.value);
-    }
+    glitchInterval.value = setTimeout(glitchCycle, nextDelay);
 }
 
 // Start the glitch animation loop, clearing any previous interval
 function startGlitching() {
-    if (glitchInterval) clearTimeout(glitchInterval);
+    if (glitchInterval.value) clearTimeout(glitchInterval.value);
     glitchCycle();
 }
 
-// Vue lifecycle: initialize targets and start animation on mount
+// Initialize targets and start animation on mount
 onMounted(async () => {
     await nextTick();
+    // Select all letter elements for glitching
     const letters = Array.from(document.querySelectorAll('.letter'));
     setTargets(letters);
     setTimeout(() => {
@@ -243,37 +126,27 @@ onMounted(async () => {
     }, 100);
 });
 
-// Vue lifecycle: clean up any running intervals/timeouts on unmount
-onUnmounted(() => {
-    if (glitchInterval) {
-        clearTimeout(glitchInterval);
-        glitchInterval = null;
-    }
-});
-
 // Top-level function to reset the glitch animation to initial state
 function resetAnimation() {
-    if (glitchInterval) {
-        clearTimeout(glitchInterval);
-        glitchInterval = null;
-    }
-    hidingMode = false;
-    glitchPhase = 'normal';
-    if (targets && targets.length) {
-        targets.forEach(el => el.classList.remove('visible'));
+    lifecycleResetAnimation();
+    if (targets.value && targets.value.length) {
+        targets.value.forEach(el => el.classList.remove('visible'));
     }
     startGlitching();
 }
 
+// Expose resetAnimation for parent components to trigger a reset
 defineExpose({ resetAnimation });
 </script>
 
 <style scoped>
+/* Layout for each word block in the headline */
 .word-block {
     display: inline-block;
     white-space: nowrap;
 }
 
+/* Base style for each letter, including transition for glitch effect */
 .letter {
     opacity: 0;
     display: inline-block;
@@ -281,10 +154,12 @@ defineExpose({ resetAnimation });
     transition: color var(--glitch-transition-duration, 0.3s) ease, opacity var(--glitch-transition-duration, 0.3s), transform var(--glitch-transition-duration, 0.3s) cubic-bezier(.68, -0.55, .27, 1.55);
 }
 
+/* Letters become visible when revealed */
 .visible {
     opacity: 1;
 }
 
+/* Glitch effect styles for animated letters */
 .letter.glitch,
 .glitch {
     opacity: 1;
