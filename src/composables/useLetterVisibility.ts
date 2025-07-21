@@ -12,14 +12,12 @@ import { GlitchConfig } from "./useGlitchLifecycle";
  *
  * @param config - GlitchConfig object containing animation parameters, including modeChangeDelay
  * @param targetsRef - Ref to array of letter DOM elements
- * @param hidingModeRef - Ref to boolean indicating if currently in hiding mode
- * @param glitchPhaseRef - Ref to string representing the current phase (e.g., 'normal', 'preHideDelay')
+ * @param animationState - Ref to string representing the current animation state (e.g., 'REVEALING', 'REVEAL_PAUSE', 'HIDING', 'HIDE_PAUSE')
  */
 export function useLetterVisibility(
     config: GlitchConfig,
     targetsRef: Ref<HTMLElement[]>,
-    hidingModeRef: Ref<boolean>,
-    glitchPhaseRef: Ref<string>,
+    animationState: Ref<string>,
     onComplete?: () => void
 ) {
     /**
@@ -29,8 +27,8 @@ export function useLetterVisibility(
      * @param totalLetters - The total number of letters to reveal
      */
     function handleRevealLogic(totalLetters: number) {
-        // Only reveal if not currently hiding and revealing is enabled
-        if (!hidingModeRef.value && config.enableAdd) {
+        // Only reveal if in REVEALING state and revealing is enabled
+        if (animationState.value === "REVEALING" && config.enableAdd) {
             // Find all hidden letters that are eligible for glitch/reveal
             const revealCandidates = targetsRef.value.filter(
                 (el) =>
@@ -49,15 +47,9 @@ export function useLetterVisibility(
                 (acc, el) => acc + (el.classList.contains("visible") ? 1 : 0),
                 0
             );
-            // If all letters are revealed, start the transition to hiding mode
+            // If all letters are revealed, transition to REVEAL_PAUSE
             if (revealedCountNow === totalLetters) {
-                // Enter a temporary phase before hiding, to allow a pause before letters start hiding
-                glitchPhaseRef.value = "preHideDelay";
-                // After modeChangeDelay ms, switch to hiding mode and resume normal glitching
-                setTimeout(() => {
-                    hidingModeRef.value = true; // Enter hiding mode
-                    glitchPhaseRef.value = "normal"; // Resume normal glitch animation
-                }, config.modeChangeDelay);
+                animationState.value = "REVEAL_PAUSE";
             }
         }
     }
@@ -67,8 +59,8 @@ export function useLetterVisibility(
      * When all letters are hidden, triggers a transition back to revealing mode after a configurable delay.
      */
     function handleHideLogic() {
-        // Only hide if currently in hiding mode and hiding is enabled
-        if (hidingModeRef.value && config.enableRemove) {
+        // Only hide if in HIDING state and hiding is enabled
+        if (animationState.value === "HIDING" && config.enableRemove) {
             // Find all visible letters that are eligible for glitch/hide
             const hideCandidates = targetsRef.value.filter(
                 (el) =>
@@ -87,16 +79,10 @@ export function useLetterVisibility(
                 (acc, el) => acc + (el.classList.contains("visible") ? 1 : 0),
                 0
             );
-            // If all letters are hidden, start the transition back to revealing mode
+            // If all letters are hidden, transition to HIDE_PAUSE and call onComplete
             if (stillVisible === 0) {
-                // All letters are now hidden. Call the provided callback to trigger a headline change/reset in the parent/component.
+                animationState.value = "HIDE_PAUSE";
                 if (onComplete) onComplete();
-                // Optionally, you can still handle the phase logic here if needed for fallback/looping
-                // glitchPhaseRef.value = "hidingComplete";
-                // setTimeout(() => {
-                //     hidingModeRef.value = false;
-                //     glitchPhaseRef.value = "normal";
-                // }, config.modeChangeDelay);
             }
         }
     }

@@ -1,51 +1,46 @@
 <template>
   <!-- Main container for Home page content -->
-  <div class="container pt-[100px] flex flex-col">
+  <div class="container flex flex-col">
     <!-- Hero section with glitching headline and call-to-action -->
-    <div class="flex flex-col items-start justify-between w-full gap-[200px]">
-      <div class="flex flex-col gap-[30px] w-full mx-auto">
+    <div class="flex flex-col items-start justify-between w-full pt-[100px] pb-[30px]"
+      :style="{ minHeight: `calc(100vh - ${headerHeight || 100}px)` }">
+      <div class=" flex flex-col gap-[30px] w-full mx-auto">
         <!-- Animated glitching headline text -->
-        <GlitchingText
-          ref="glitchTextRef"
-          :text="'Bespoke Digital Marketing that Captivates'"
-          class="w-full"
-        />
+        <GlitchingText ref="glitchTextRef" :text="'Bespoke Digital Marketing that Captivates'" class="w-full" />
       </div>
       <div class="w-full flex justify-end">
         <!-- GO Digital button, fades in when animation completes or user scrolls -->
-        <ArrowButton
-          :class="['go-digital-btn', (showGoDigital || userScrolled) ? 'fade-in' : 'fade-out']"
-          @click="() => { console.log('GO Digital direct click'); resetGlitchText(); }"
-        >GO Digital</ArrowButton>
+        <ArrowButton :class="['go-digital-btn', (showGoDigital || userScrolled) ? 'fade-in' : 'fade-out']"
+          @click="() => { console.log('GO Digital direct click'); resetGlitchText(); }">GO Digital</ArrowButton>
         <!-- Down arrow for navigation cue -->
         <button class="w-[36px] hidden md:block">
           <ChevronDown class="fill-id-dark-grey" />
         </button>
       </div>
     </div>
+  </div>
+  <div class="container pt-[100px] flex flex-col">
     <!-- SVG scroll animation and description section -->
     <div class="flex flex-col items-start max-w-[320px] mx-auto pt-[150px]">
       <!-- Animated SVG sequence based on scroll position -->
       <SvgScrollAnimation :svgs="svgs" :deadSpace="0.2" />
       <p class="pt-[90px]">
-        IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented digital marketing to fuel your online success.
+        IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive
+        measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented
+        digital marketing to fuel your online success.
       </p>
     </div>
     <!-- Projects showcase section -->
     <div class="project-wrapper flex flex-col pt-[60px] mb-[120px]">
       <!-- Render each project card from fetched data -->
-      <ProjectCard
-        v-for="(project, idx) in projects"
-        :key="idx"
-        :title="project.title"
-        :subtitle="project.subtitle"
-        :image="project.image"
-      />
+      <ProjectCard v-for="(project, idx) in projects" :key="idx" :title="project.title" :subtitle="project.subtitle"
+        :image="project.image" />
     </div>
   </div>
 </template>
 
 <script setup>
+import { inject, computed } from 'vue';
 // Import core and UI components for the Home page
 import SvgScrollAnimation from '../components/SvgScrollAnimation.vue';
 import ArrowButton from '../components/ArrowButton.vue';
@@ -72,6 +67,10 @@ function resetGlitchText() {
     glitchTextRef.value.resetAnimation();
   }
 }
+
+// Inject headerHeight from App.vue
+const injectedHeaderHeight = inject('headerHeight', 100);
+const headerHeight = computed(() => injectedHeaderHeight?.value ?? 100);
 
 // Controls visibility of the GO DIGITAL button
 const showGoDigital = ref(false);
@@ -152,10 +151,12 @@ onUnmounted(() => {
   pointer-events: none;
   transition: opacity 2s;
 }
+
 .go-digital-btn.fade-in {
   opacity: 1;
   pointer-events: auto;
 }
+
 .go-digital-btn.fade-out {
   opacity: 0;
   pointer-events: none;
