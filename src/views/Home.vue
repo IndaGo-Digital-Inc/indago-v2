@@ -1,10 +1,11 @@
 <template>
+  <!-- Header is included in App.vue, not here -->
   <div class="container pt-[100px] flex flex-col">
     
     <div class="flex flex-col items-start justify-between w-full gap-[120px]">
       <div class="flex flex-col gap-[30px] w-full mx-auto">
-        
         <GlitchingText
+          ref="glitchTextRef"
           :text="'Bespoke Digital Marketing that Captivates and Converts'"
           class="w-full"
         />
@@ -12,6 +13,7 @@
       <div class="w-full flex justify-end">
         <ArrowButton
           :class="['go-digital-btn', (showGoDigital || userScrolled) ? 'fade-in' : 'fade-out']"
+          @click="() => { console.log('GO Digital direct click'); resetGlitchText(); }"
         >GO Digital</ArrowButton>
         <button class="w-[36px] hidden md:block">
           <ChevronDown class="fill-id-dark-grey" />
@@ -60,6 +62,16 @@ import ItsAnim from '../assets/stop-blending-in/its.svg';
 
 
 import { ref, onMounted } from 'vue';
+
+// Ref for GlitchingText
+const glitchTextRef = ref(null);
+
+function resetGlitchText() {
+  console.log('GO Digital button clicked: glitch animation reset');
+  if (glitchTextRef.value && glitchTextRef.value.resetAnimation) {
+    glitchTextRef.value.resetAnimation();
+  }
+}
 
 const showGoDigital = ref(false);
 
@@ -113,6 +125,19 @@ onMounted(() => {
     }
   }
   window.addEventListener('scroll', handleFirstScroll, { once: true });
+
+  // Listen for the custom event to show the GO DIGITAL button
+  window.addEventListener('showGoDigital', () => {
+    showGoDigital.value = true;
+  });
+
+  // Listen for the global glitch reset event
+  window.addEventListener('reset-glitch', resetGlitchText);
+});
+
+import { onUnmounted } from 'vue';
+onUnmounted(() => {
+  window.removeEventListener('reset-glitch', resetGlitchText);
 });
 
 
