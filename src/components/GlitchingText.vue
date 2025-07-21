@@ -52,6 +52,9 @@ let glitchPhase = 'normal'; // 'normal', 'preHideDelay', 'preRevealDelay'
 
 // Select a color from the palette using weighted probabilities
 function pickWeightedColor() {
+    // If in hiding mode, always return purple
+    if (hidingMode && glitchPhase === 'normal') return '#4B0082';
+    if (glitchPhase === 'preHideDelay') return '#FFE412';
     const r = Math.random();
     let acc = 0;
     for (const c of config.colorPalette) {
