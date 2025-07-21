@@ -15,8 +15,8 @@
 <script setup>
 // Import Vue composition API and custom composables for scroll logic
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
-import { getScrollProgress, getNextIndex } from '../composables/useScrollProgress';
-import { useScrollObserver } from '../composables/useScrollObserver';
+import { getScrollProgress, getNextIndex } from '../composables/useScrollProgress.ts';
+import { useScrollObserver } from '../composables/useScrollObserver.ts';
 
 // Props: array of SVGs to animate and deadSpace for scroll logic
 const props = defineProps({

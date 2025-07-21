@@ -1,9 +1,12 @@
-// useScrollObserver.js
+// useScrollObserver.ts
 // Manages IntersectionObserver and scroll event activation for a container
-import { onUnmounted } from 'vue';
+import { Ref, onUnmounted } from 'vue';
 
-export function useScrollObserver(containerRef, handleScroll) {
-  let observer = null;
+export function useScrollObserver(
+  containerRef: Ref<HTMLElement | null>,
+  handleScroll: () => void
+) {
+  let observer: IntersectionObserver | null = null;
   let scrollActive = false;
 
   function enableScroll() {

@@ -17,9 +17,9 @@
 <script setup>
 // Import Vue lifecycle and custom composables for glitch animation
 import { onMounted, nextTick } from 'vue';
-import { useGlitchLifecycle } from '../composables/useGlitchLifecycle';
-import { useGlitchAnimation } from '../composables/useGlitchAnimation';
-import { useLetterVisibility } from '../composables/useLetterVisibility';
+import { useGlitchLifecycle } from '../composables/useGlitchLifecycle.ts';
+import { useGlitchAnimation } from '../composables/useGlitchAnimation.ts';
+import { useLetterVisibility } from '../composables/useLetterVisibility.ts';
 
 // Props: text to animate
 const props = defineProps({ text: String });
@@ -28,8 +28,8 @@ const words = props.text.split(/\s+/).map(word => word.split(''));
 
 // Glitch animation configuration (timings, colors, effects)
 const config = {
-    minDelay: 300, // Minimum delay between glitch cycles (ms)
-    maxDelay: 800, // Maximum delay between glitch cycles (ms)
+    minDelay: 100, // Minimum delay between glitch cycles (ms)
+    maxDelay: 600, // Maximum delay between glitch cycles (ms)
     minTransition: 0.1, // Minimum transition duration (s)
     maxTransition: 1,   // Maximum transition duration (s)
     numGlitchMin: 1,    // Minimum number of letters to glitch per cycle

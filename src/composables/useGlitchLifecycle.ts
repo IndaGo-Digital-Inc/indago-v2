@@ -1,14 +1,37 @@
-// useGlitchLifecycle.js
+// useGlitchLifecycle.ts
 // Manages glitch animation lifecycle: targets, intervals, and reset logic
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { Ref, ref, onUnmounted } from 'vue';
 
-export function useGlitchLifecycle(config) {
-  const glitchInterval = ref(null);
-  const targets = ref([]);
-  const hidingMode = ref(false);
-  const glitchPhase = ref('normal');
+export interface GlitchConfig {
+  minDelay: number;
+  maxDelay: number;
+  minTransition: number;
+  maxTransition: number;
+  numGlitchMin: number;
+  numGlitchMax: number;
+  hideMultiplier: number;
+  minRotate: number;
+  maxRotate: number;
+  minSkew: number;
+  maxSkew: number;
+  minScale: number;
+  maxScale: number;
+  scaleProb: number;
+  colorPalette: Array<{ value: string; prob: number }>;
+  revealMin: number;
+  revealMax: number;
+  enableAdd: boolean;
+  enableRemove: boolean;
+  modeChangeDelay: number;
+}
 
-  function setTargets(refsOrSelector) {
+export function useGlitchLifecycle(config: GlitchConfig) {
+  const glitchInterval = ref<number | null>(null);
+  const targets = ref<HTMLElement[]>([]);
+  const hidingMode = ref<boolean>(false);
+  const glitchPhase = ref<string>('normal');
+
+  function setTargets(refsOrSelector: string | Array<HTMLElement | { value: HTMLElement }>) {
     if (typeof refsOrSelector === 'string') {
       targets.value = Array.from(document.querySelectorAll(refsOrSelector));
     } else if (Array.isArray(refsOrSelector)) {

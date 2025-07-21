@@ -1,11 +1,17 @@
-// useLetterVisibility.js
+// useLetterVisibility.ts
 // Handles reveal/hide logic and state transitions for animated text
-import { ref } from 'vue';
+import { Ref } from 'vue';
 import { updateLetterVisibility } from './useGlitchUtils';
+import { GlitchConfig } from './useGlitchLifecycle';
 
-export function useLetterVisibility(config, targetsRef, hidingModeRef, glitchPhaseRef) {
+export function useLetterVisibility(
+  config: GlitchConfig,
+  targetsRef: Ref<HTMLElement[]>,
+  hidingModeRef: Ref<boolean>,
+  glitchPhaseRef: Ref<string>
+) {
   // Reveal hidden letters if allowed, and handle transition to hiding mode when all are revealed
-  function handleRevealLogic(totalLetters) {
+  function handleRevealLogic(totalLetters: number) {
     if (!hidingModeRef.value && config.enableAdd) {
       const revealCandidates = targetsRef.value.filter(el => !el.classList.contains('visible') && el.classList.contains('glitch'));
       updateLetterVisibility({

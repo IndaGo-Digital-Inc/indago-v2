@@ -1,11 +1,38 @@
-// useGlitchAnimation.js
+// useGlitchAnimation.ts
 // Handles glitch effect logic: picking colors, applying glitch styles, and animation cycles
-import { ref } from 'vue';
+import { Ref } from 'vue';
 import { pickWeightedColor, pickRandomIndices } from './useGlitchUtils';
 
-export function useGlitchAnimation(config, hidingModeRef, glitchPhaseRef) {
+export interface GlitchConfig {
+  minDelay: number;
+  maxDelay: number;
+  minTransition: number;
+  maxTransition: number;
+  numGlitchMin: number;
+  numGlitchMax: number;
+  hideMultiplier: number;
+  minRotate: number;
+  maxRotate: number;
+  minSkew: number;
+  maxSkew: number;
+  minScale: number;
+  maxScale: number;
+  scaleProb: number;
+  colorPalette: Array<{ value: string; prob: number }>;
+  revealMin: number;
+  revealMax: number;
+  enableAdd: boolean;
+  enableRemove: boolean;
+  modeChangeDelay: number;
+}
+
+export function useGlitchAnimation(
+  config: GlitchConfig,
+  hidingModeRef: Ref<boolean>,
+  glitchPhaseRef: Ref<string>
+) {
   // Apply random glitch styles to a letter element
-  function applyGlitchStyle(el) {
+  function applyGlitchStyle(el: HTMLElement) {
     const color = pickWeightedColor(config, hidingModeRef.value, glitchPhaseRef.value);
     const transitionDuration = (config.minTransition + Math.random() * (config.maxTransition - config.minTransition)).toFixed(2) + 's';
     const rotX = (config.minRotate + Math.random() * (config.maxRotate - config.minRotate)).toFixed(2) + 'deg';
@@ -32,7 +59,7 @@ export function useGlitchAnimation(config, hidingModeRef, glitchPhaseRef) {
   }
 
   // Apply glitch styles to a random subset of candidate letters
-  function applyGlitchesToCandidates(candidates, count) {
+  function applyGlitchesToCandidates(candidates: HTMLElement[], count: number) {
     if (candidates.length > 0 && count > 0) {
       const indices = pickRandomIndices(candidates.length, count);
       for (let i = 0; i < indices.length; i++) {

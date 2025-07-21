@@ -1,8 +1,9 @@
-// useGlitchUtils.js
+// useGlitchUtils.ts
 // Utility functions for glitch animation and visibility
 
-// Pick a color from the palette using weighted probabilities
-export function pickWeightedColor(config, hidingMode, glitchPhase) {
+import { GlitchConfig } from './useGlitchLifecycle';
+
+export function pickWeightedColor(config: GlitchConfig, hidingMode: boolean, glitchPhase: string): string {
   if (hidingMode && glitchPhase === 'normal') return '#4B0082';
   if (glitchPhase === 'preHideDelay') return '#FFE412';
   const r = Math.random();
@@ -14,9 +15,8 @@ export function pickWeightedColor(config, hidingMode, glitchPhase) {
   return config.colorPalette[config.colorPalette.length - 1].value;
 }
 
-// Pick 'count' unique random indices from a list of given length
-export function pickRandomIndices(length, count) {
-  const indices = [];
+export function pickRandomIndices(length: number, count: number): number[] {
+  const indices: number[] = [];
   while (indices.length < count) {
     const idx = Math.floor(Math.random() * length);
     if (!indices.includes(idx)) indices.push(idx);
@@ -24,11 +24,17 @@ export function pickRandomIndices(length, count) {
   return indices;
 }
 
-// Reveal or hide a random subset of candidate letters
-export function updateLetterVisibility({ candidates, min, max, action }) {
+export interface UpdateLetterVisibilityOptions {
+  candidates: HTMLElement[];
+  min: number;
+  max: number;
+  action: 'reveal' | 'hide';
+}
+
+export function updateLetterVisibility({ candidates, min, max, action }: UpdateLetterVisibilityOptions): void {
   if (!candidates.length) return;
   const count = Math.min(candidates.length, Math.floor(Math.random() * (max - min + 1)) + min);
-  const indices = [];
+  const indices: number[] = [];
   while (indices.length < count && candidates.length > 0) {
     const idx = Math.floor(Math.random() * candidates.length);
     if (!indices.includes(idx)) indices.push(idx);
