@@ -2,12 +2,12 @@
   <!-- Main container for Home page content -->
   <div class="container pt-[100px] flex flex-col">
     <!-- Hero section with glitching headline and call-to-action -->
-    <div class="flex flex-col items-start justify-between w-full gap-[120px]">
+    <div class="flex flex-col items-start justify-between w-full gap-[200px]">
       <div class="flex flex-col gap-[30px] w-full mx-auto">
         <!-- Animated glitching headline text -->
         <GlitchingText
           ref="glitchTextRef"
-          :text="'Bespoke Digital Marketing that Captivates and Converts'"
+          :text="'Bespoke Digital Marketing that Captivates'"
           class="w-full"
         />
       </div>

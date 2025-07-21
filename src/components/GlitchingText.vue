@@ -2,12 +2,15 @@
     <!-- GlitchingText: Animated headline with per-letter glitch/reveal/hide effects -->
     <h1 class="w-full">
         <!-- Render each word as a block for layout control -->
-        <span v-for="(word, wIdx) in words" :key="wIdx" class="word-block">
-            <!-- Render each character as a span for individual glitching -->
-            <span v-for="(char, cIdx) in word" :key="cIdx" class="letter letter-upper">
-                {{ char === ' ' ? '\u00A0' : char }}
+        <template v-for="(word, wIdx) in words" :key="wIdx">
+            <span class="word-block">
+                <!-- Render each character as a span for individual glitching -->
+                <span v-for="(char, cIdx) in word" :key="cIdx" class="letter letter-upper">
+                    {{ char }}
+                </span>
             </span>
-        </span>
+            <span v-if="wIdx < words.length - 1" aria-hidden="true">&nbsp;</span>
+        </template>
     </h1>
 </template>
 

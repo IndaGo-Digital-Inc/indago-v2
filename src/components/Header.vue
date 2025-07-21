@@ -7,8 +7,10 @@ function emitResetGlitch() {
 </script>
 
 <template>
-    <header class="container flex justify-between items-center bg-id-black pt-[30px]">
-        <IdGO class="h-[40px] fill-id-purple" @click="emitResetGlitch" style="cursor:pointer;" />
+    <header class="bg-id-black pt-[30px]">
+        <div class="container flex justify-between items-center">
+            <IdGO class="h-[40px] fill-id-purple" @click="emitResetGlitch" style="cursor:pointer;" />
+        </div>
     </header>
 </template>
 

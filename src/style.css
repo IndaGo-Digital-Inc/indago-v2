@@ -72,7 +72,7 @@ button {
   button { font-size: 17px; letter-spacing: 1.7px; }
 }
 @media (min-width: 768px) {
-  h1 { font-size: 44px; letter-spacing: 4px; }
+  h1 { font-size: 82px; letter-spacing: 5px; }
   h4 { font-size: 16px; letter-spacing: 0.64px; }
   h5 { font-size: 14px; letter-spacing: 0.56px; }
   p  { font-size: 16px; }
@@ -86,14 +86,14 @@ button {
   button { font-size: 20px; letter-spacing: 2.5px; }
 }
 @media (min-width: 1376px) {
-  h1 { font-size: 72px; letter-spacing: 6px; }
+  h1 { font-size: 129px; letter-spacing: 8px; }
   h4 { font-size: 20px; letter-spacing: 1px; }
   h5 { font-size: 18px; letter-spacing: 0.8px; }
   p  { font-size: 20px; }
   button { font-size: 22px; letter-spacing: 3px; }
 }
 @media (min-width: 1921px) {
-  h1 { font-size: 88px; letter-spacing: 7px; }
+  h1 { font-size: 129px; letter-spacing: 8px; }
   h4 { font-size: 22px; letter-spacing: 1.2px; }
   h5 { font-size: 20px; letter-spacing: 1px; }
   p  { font-size: 22px; }
