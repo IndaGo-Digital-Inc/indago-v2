@@ -67,7 +67,6 @@ import { ref, onMounted } from 'vue';
 const glitchTextRef = ref(null);
 
 function resetGlitchText() {
-  console.log('GO Digital button clicked: glitch animation reset');
   if (glitchTextRef.value && glitchTextRef.value.resetAnimation) {
     glitchTextRef.value.resetAnimation();
   }
@@ -77,9 +76,9 @@ const showGoDigital = ref(false);
 
 // Animation SVGs
 const svgs = [
-  { component: StopAnim, color: 'fill-id-purple' },
-  { component: BlendingAnim, color: 'fill-id-purple' },
-  { component: InAnim, color: 'fill-id-purple' },
+  // { component: StopAnim, color: 'fill-id-purple' },
+  // { component: BlendingAnim, color: 'fill-id-purple' },
+  // { component: InAnim, color: 'fill-id-purple' },
   { component: ItsAnim, color: 'fill-id-purple' },
   { component: TimeAnim, color: 'fill-id-purple' },
   { component: ToAnim, color: 'fill-id-purple' },

@@ -11,7 +11,6 @@
 // Vue 3 GlitchingText Component
 // Animated text with glitch/reveal/hide cycles and tunable config
 
-
 const props = defineProps({
     text: String
 });
@@ -50,7 +49,8 @@ let targets = [];          // Array of letter elements
 let hidingMode = false;    // Whether currently in hiding mode
 let glitchPhase = 'normal'; // 'normal', 'preHideDelay', 'preRevealDelay'
 
-// Select a color from the palette using weighted probabilities
+// Select a color from the palette using weighted probabilities for glitch effect
+// Returns purple in hiding mode, yellow in pre-hide delay, otherwise weighted random
 function pickWeightedColor() {
     // If in hiding mode, always return purple
     if (hidingMode && glitchPhase === 'normal') return '#4B0082';
@@ -64,7 +64,8 @@ function pickWeightedColor() {
     return config.colorPalette[config.colorPalette.length - 1].value;
 }
 
-// Apply glitch styles to a letter element
+// Apply random glitch styles (transform, color, shadow, transition) to a letter element
+// Adds 'glitch' class for animation, then removes it after transition
 function applyGlitchStyle(el) {
     const color = pickWeightedColor();
     const transitionDuration = (config.minTransition + Math.random() * (config.maxTransition - config.minTransition)).toFixed(2) + 's';
@@ -94,6 +95,7 @@ function applyGlitchStyle(el) {
 }
 
 // Reveal or hide a random subset of candidate letters
+// Used for both revealing and hiding letters during animation cycles
 function updateLetterVisibility({ candidates, min, max, action }) {
     if (!candidates.length) return;
     const count = Math.min(candidates.length, Math.floor(Math.random() * (max - min + 1)) + min);
@@ -112,21 +114,17 @@ function updateLetterVisibility({ candidates, min, max, action }) {
 }
 
 import { onMounted, onUnmounted, nextTick } from 'vue';
-function glitchCycle() {
-    if (!targets.length) return;
-    const revealedCount = targets.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
-    const totalLetters = targets.filter(el => el.textContent && el.textContent.trim() !== '' && el.textContent.trim() !== ' ').length;
-
-    // Select glitch candidates and glitch count based on current phase
-    let glitchCandidates;
-    let min, max;
+// Determine which letters are candidates for glitching and the min/max count
+// Logic depends on current phase and hiding mode
+function getGlitchCandidatesAndRange() {
+    let glitchCandidates, min, max;
     if (glitchPhase === 'preHideDelay') {
         glitchCandidates = targets.filter(el => el.classList.contains('visible'));
         min = Math.min(config.numGlitchMin, glitchCandidates.length);
-        max = min; // numGlitchMax = numGlitchMin during preHideDelay
+        max = min;
     } else if (glitchPhase === 'preRevealDelay') {
         glitchCandidates = targets.filter(el => !el.classList.contains('visible'));
-        min = Math.min(config.numGlitchMax, glitchCandidates.length); // numGlitchMin = numGlitchMax during preRevealDelay
+        min = Math.min(config.numGlitchMax, glitchCandidates.length);
         max = Math.min(config.numGlitchMax, glitchCandidates.length);
     } else if (!hidingMode) {
         glitchCandidates = targets.filter(el => !el.classList.contains('visible'));
@@ -137,19 +135,31 @@ function glitchCycle() {
         min = Math.min(config.numGlitchMin * config.hideMultiplier, glitchCandidates.length);
         max = Math.min(config.numGlitchMax * config.hideMultiplier, glitchCandidates.length);
     }
-    const count = Math.max(min, Math.floor(Math.random() * (max - min + 1)) + min);
-    if (glitchCandidates.length > 0 && count > 0) {
-        const indices = [];
-        while (indices.length < count) {
-            const idx = Math.floor(Math.random() * glitchCandidates.length);
-            if (!indices.includes(idx)) indices.push(idx);
-        }
+    return { glitchCandidates, min, max };
+}
+
+// Pick 'count' unique random indices from a list of given length
+function pickRandomIndices(length, count) {
+    const indices = [];
+    while (indices.length < count) {
+        const idx = Math.floor(Math.random() * length);
+        if (!indices.includes(idx)) indices.push(idx);
+    }
+    return indices;
+}
+
+// Apply glitch styles to a random subset of candidate letters
+function applyGlitchesToCandidates(candidates, count) {
+    if (candidates.length > 0 && count > 0) {
+        const indices = pickRandomIndices(candidates.length, count);
         for (let i = 0; i < indices.length; i++) {
-            applyGlitchStyle(glitchCandidates[indices[i]]);
+            applyGlitchStyle(candidates[indices[i]]);
         }
     }
+}
 
-    // Reveal logic: reveal hidden letters if allowed
+// Reveal hidden letters if allowed, and handle transition to hiding mode when all are revealed
+function handleRevealLogic(totalLetters) {
     if (!hidingMode && config.enableAdd) {
         const revealCandidates = targets.filter(el => !el.classList.contains('visible') && el.classList.contains('glitch'));
         updateLetterVisibility({
@@ -161,15 +171,17 @@ function glitchCycle() {
         const revealedCountNow = targets.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
         if (revealedCountNow === totalLetters) {
             window.dispatchEvent(new CustomEvent('showGoDigital'));
-            glitchPhase = 'preHideDelay'; // Enter pre-hide delay phase
+            glitchPhase = 'preHideDelay';
             setTimeout(() => {
                 hidingMode = true;
                 glitchPhase = 'normal';
             }, config.modeChangeDelay);
         }
     }
+}
 
-    // Hide logic: hide visible letters if allowed
+// Hide visible letters if allowed, and handle transition to reveal mode when all are hidden
+function handleHideLogic() {
     if (hidingMode && config.enableRemove) {
         const hideCandidates = targets.filter(el => el.classList.contains('visible') && el.classList.contains('glitch'));
         updateLetterVisibility({
@@ -180,20 +192,33 @@ function glitchCycle() {
         });
         const stillVisible = targets.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
         if (stillVisible === 0) {
-            glitchPhase = 'preRevealDelay'; // Enter pre-reveal delay phase
+            glitchPhase = 'preRevealDelay';
             setTimeout(() => {
                 hidingMode = false;
                 glitchPhase = 'normal';
             }, config.modeChangeDelay);
         }
     }
+}
 
-    // Schedule next cycle
+// Main animation loop: applies glitches, handles reveal/hide logic, and schedules next cycle
+function glitchCycle() {
+    if (!targets.length) return;
+    const revealedCount = targets.reduce((acc, el) => acc + (el.classList.contains('visible') ? 1 : 0), 0);
+    const totalLetters = targets.filter(el => el.textContent && el.textContent.trim() !== '' && el.textContent.trim() !== ' ').length;
+
+    const { glitchCandidates, min, max } = getGlitchCandidatesAndRange();
+    const count = Math.max(min, Math.floor(Math.random() * (max - min + 1)) + min);
+    applyGlitchesToCandidates(glitchCandidates, count);
+
+    handleRevealLogic(totalLetters);
+    handleHideLogic();
+
     const nextDelay = config.minDelay + Math.random() * (config.maxDelay - config.minDelay);
     glitchInterval = setTimeout(glitchCycle, nextDelay);
 }
 
-// Set targets to all letter elements
+// Set the 'targets' array to all letter elements, from selector or refs
 function setTargets(refsOrSelector) {
     if (typeof refsOrSelector === 'string') {
         targets = Array.from(document.querySelectorAll(refsOrSelector));
@@ -202,13 +227,13 @@ function setTargets(refsOrSelector) {
     }
 }
 
-// Start the glitch animation loop
+// Start the glitch animation loop, clearing any previous interval
 function startGlitching() {
     if (glitchInterval) clearTimeout(glitchInterval);
     glitchCycle();
 }
 
-// Initialize targets and start animation on mount
+// Vue lifecycle: initialize targets and start animation on mount
 onMounted(async () => {
     await nextTick();
     const letters = Array.from(document.querySelectorAll('.letter'));
@@ -218,7 +243,7 @@ onMounted(async () => {
     }, 100);
 });
 
-// Clean up any running intervals/timeouts on unmount
+// Vue lifecycle: clean up any running intervals/timeouts on unmount
 onUnmounted(() => {
     if (glitchInterval) {
         clearTimeout(glitchInterval);
@@ -226,7 +251,7 @@ onUnmounted(() => {
     }
 });
 
-// Top-level function for reset
+// Top-level function to reset the glitch animation to initial state
 function resetAnimation() {
     if (glitchInterval) {
         clearTimeout(glitchInterval);
