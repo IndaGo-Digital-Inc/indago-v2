@@ -6,7 +6,8 @@ import UnoCSS from 'unocss/vite'; // 1. Import UnoCSS
 import svgLoader from 'vite-svg-loader';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+
+export default defineConfig(({ command }) => ({
 	plugins: [
 		vue(),
 		UnoCSS(), // 2. Add the UnoCSS plugin
@@ -48,4 +49,5 @@ export default defineConfig({
 			host: 'localhost',
 		},
 	},
-});
+	base: command === 'build' ? '/wp-content/themes/indago-v2/dist/' : '/',
+}));
