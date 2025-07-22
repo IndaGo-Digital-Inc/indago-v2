@@ -1,33 +1,40 @@
 <template>
-  <div class="reviews-wrapper flex flex-col gap-10 py-12">
-    <div v-if="loading" class="text-center py-8">Loading reviews...</div>
-    <div v-else-if="error" class="text-center text-red-500 py-8">Error loading reviews.</div>
-    <div v-else>
-      <div v-for="review in reviews" :key="review.id" class="review-card border border-id-dark-grey rounded-lg p-6 bg-id-bg">
-        <div class="review-content text-lg mb-4" v-html="review.content"></div>
-        <div class="review-meta text-sm text-id-medium-grey flex flex-col gap-1">
-          <span v-if="review.reviewer_name" class="font-bold">{{ review.reviewer_name }}</span>
-          <span v-if="review.reviewer_title">{{ review.reviewer_title }}</span>
+  <div v-if="reviews?.length" class="reviews-wrapper flex flex-col">
+
+    <div v-for="review in reviews" :key="review.id" class="review w-full flex flex-col gap-[30px]">
+
+      <div v-html="review.content" class="review-content"></div>
+
+      <div class="review-meta">
+        <h4 v-if="review.reviewer_name">{{ review.reviewer_name }}</h4>
+
+        <h5 v-if="review.reviewer_title" class="pt-[3px] pb-[3px]">{{ review.reviewer_title }}</h5>
+
+        <div v-if="review.clients?.length" class="clients flex flex-col gap-[5px]">
+          <h5 v-for="client in review.clients" :key="client.id" v-html="client.name"></h5>
+        </div>
+
+        <div class="stars flex justify-start items-center gap-[5px] pt-[30px]">
+          <span v-for="star in 5" :key="star" class="star color-id-purple">★</span>
         </div>
       </div>
+
     </div>
   </div>
 </template>
 
 <script setup>
-import { useReviews } from '../composables/useReviews';
-const { reviews, loading, error } = useReviews();
+import { useReviews } from '../composables/useReviews.ts';
+const { reviews } = useReviews();
 </script>
 
 <style scoped>
-.reviews-wrapper {
-  max-width: 700px;
-  margin: 0 auto;
+.review-content * {
+  font-size: 21px;
+  line-height: 1.675em;
 }
-.review-card {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
-.review-meta {
-  margin-top: 10px;
+
+.star {
+  font-size: 20px;
 }
 </style>

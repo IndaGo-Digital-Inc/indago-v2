@@ -1,6 +1,6 @@
 <template>
   <!-- Main container for Home page content -->
-  <div class="container flex flex-col">
+  <section class="container flex flex-col">
     <!-- Hero section with glitching headline and call-to-action -->
     <div class="flex flex-col items-start justify-between w-full pt-[100px] pb-[30px]"
       :style="{ minHeight: `calc(100vh - ${headerHeight || 100}px)` }">
@@ -18,12 +18,12 @@
         </button>
       </div>
     </div>
-  </div>
-  <div class="container flex flex-col">
+  </section>
+  <section class="container flex flex-col">
     <!-- SVG scroll animation and description section -->
     <div class="flex flex-col items-start pt-[150px]">
       <!-- Animated SVG sequence based on scroll position -->
-      <SvgScrollAnimation :svgs="svgs" />
+      <SvgScrollAnimation :svgs="standOutSvgs" />
       <p class="pt-[90px]">
         IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive
         measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented
@@ -33,20 +33,28 @@
     <!-- Projects showcase section -->
     <div class="project-wrapper flex flex-col pt-[60px] mb-[120px]">
       <!-- Render each project card from fetched data -->
-      <ProjectCard
-        v-for="(project, idx) in projects"
-        :key="idx"
-        :title="project.title"
-        :image="project.image"
-        :excerpt="project.excerpt"
-        :taxonomies="project.taxonomies"
-        :link="project.link"
-      />
+      <ProjectCard v-for="(project, idx) in projects" :key="idx" :title="project.title" :image="project.image"
+        :excerpt="project.excerpt" :taxonomies="project.taxonomies" :link="project.link" />
     </div>
-  </div>
-  <div class="container flex flex-col">
+  </section>
+  <section class="container flex flex-col pb-[120px]">
     <Reviews />
-  </div>
+  </section>
+  <section class="container flex flex-col pb-[120px]">
+    <ServicesList />
+  </section>
+  <section class="container flex flex-col pb-[120px]">
+    <SvgScrollAnimation :svgs="trustedPartnersSvgs" />
+    <p class="pt-[90px]">
+      IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive
+      measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented
+      digital marketing to fuel your online success.
+    </p>
+  </section>
+  <section class="container flex flex-col pb-[120px] gap-[30px]">
+    <h2>It’s time to transform your online presence. Contact us today for a free consultation.</h2>
+    <ContactForm />
+  </section>
 </template>
 
 <script setup>
@@ -57,7 +65,10 @@ import ArrowButton from '../components/ArrowButton.vue';
 import ProjectCard from '../components/ProjectCard.vue';
 import ChevronDown from '../assets/id-chevron-down.svg';
 import GlitchingText from '../components/GlitchingText.vue';
-// Import SVG assets for scroll animation
+import ServicesList from '../components/ServicesList.vue';
+import ContactForm from '../components/ContactForm.vue';
+
+// Import SVG assets for stand out scroll animation
 import StopAnim from '../assets/stop-blending-in/stop.svg';
 import BlendingAnim from '../assets/stop-blending-in/blending.svg';
 import InAnim from '../assets/stop-blending-in/in.svg';
@@ -68,6 +79,29 @@ import TimeAnim from '../assets/stop-blending-in/time.svg';
 import ItsAnim from '../assets/stop-blending-in/its.svg';
 import { ref, onMounted } from 'vue';
 import { useProjects } from '../composables/useProjects';
+
+// SVGs used for stand out scroll animation
+const standOutSvgs = [
+  { component: ItsAnim, color: 'fill-id-purple' },
+  { component: TimeAnim, color: 'fill-id-purple' },
+  { component: ToAnim, color: 'fill-id-purple' },
+  { component: StandAnim, color: 'fill-id-purple' },
+  { component: OutAnim, color: 'fill-id-purple' },
+];
+
+// Impport SVG assets for trusted partners scroll animation
+import TrustedAnim from '../assets/trusted-partners/trusted.svg';
+import PartnerAnim from '../assets/trusted-partners/partners.svg';
+import TangibleAnim from '../assets/trusted-partners/tangible.svg';
+import ResultsAnim from '../assets/trusted-partners/results.svg';
+
+// SVGs for trusted partners scroll animation
+const trustedPartnersSvgs = [
+  { component: TrustedAnim, color: 'fill-id-purple' },
+  { component: PartnerAnim, color: 'fill-id-purple' },
+  { component: TangibleAnim, color: 'fill-id-purple' },
+  { component: ResultsAnim, color: 'fill-id-purple' },
+];
 
 // Ref for GlitchingText component to control animation
 const glitchTextRef = ref(null);
@@ -85,15 +119,6 @@ const headerHeight = computed(() => injectedHeaderHeight?.value ?? 100);
 
 // Controls visibility of the GO DIGITAL button
 const showGoDigital = ref(false);
-
-// SVGs used for scroll-driven animation sequence
-const svgs = [
-  { component: ItsAnim, color: 'fill-id-purple' },
-  { component: TimeAnim, color: 'fill-id-purple' },
-  { component: ToAnim, color: 'fill-id-purple' },
-  { component: StandAnim, color: 'fill-id-purple' },
-  { component: OutAnim, color: 'fill-id-purple' },
-];
 
 // Use the useProjects composable
 const { projects, loading: projectsLoading, error: projectsError, fetchProjects } = useProjects();

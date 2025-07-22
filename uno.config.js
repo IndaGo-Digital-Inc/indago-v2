@@ -5,6 +5,9 @@ export default defineConfig({
         fontFamily: {
             'sans': ['Montserrat', 'sans-serif'],
         },
+        fontSize: {
+            'big-body': ['34px', '1.675em'],
+        },
         colors: {
             'id-white': '#FFFFFF',
             'id-super-light-grey': '#E3E3E3',
