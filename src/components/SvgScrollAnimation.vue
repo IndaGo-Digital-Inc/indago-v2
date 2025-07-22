@@ -1,6 +1,6 @@
 <template>
   <!-- Container for SVG scroll animation -->
-  <div ref="svgContainer">
+  <div ref="svgContainer" class="w-full">
     <!-- Dynamically render the active SVG component based on scroll position -->
     <component
       :is="svgs[activeIndex].component"
@@ -18,15 +18,11 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import { getScrollProgress, getNextIndex } from '../composables/useScrollProgress.ts';
 import { useScrollObserver } from '../composables/useScrollObserver.ts';
 
-// Props: array of SVGs to animate and deadSpace for scroll logic
+// Props: array of SVGs to animate
 const props = defineProps({
   svgs: {
     type: Array,
     required: true,
-  },
-  deadSpace: {
-    type: Number,
-    default: 0.2,
   },
 });
 

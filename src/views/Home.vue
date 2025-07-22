@@ -19,11 +19,11 @@
       </div>
     </div>
   </div>
-  <div class="container pt-[100px] flex flex-col">
+  <div class="container flex flex-col">
     <!-- SVG scroll animation and description section -->
-    <div class="flex flex-col items-start max-w-[320px] mx-auto pt-[150px]">
+    <div class="flex flex-col items-start pt-[150px]">
       <!-- Animated SVG sequence based on scroll position -->
-      <SvgScrollAnimation :svgs="svgs" :deadSpace="0.2" />
+      <SvgScrollAnimation :svgs="svgs" />
       <p class="pt-[90px]">
         IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive
         measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented
@@ -33,9 +33,19 @@
     <!-- Projects showcase section -->
     <div class="project-wrapper flex flex-col pt-[60px] mb-[120px]">
       <!-- Render each project card from fetched data -->
-      <ProjectCard v-for="(project, idx) in projects" :key="idx" :title="project.title" :subtitle="project.subtitle"
-        :image="project.image" />
+      <ProjectCard
+        v-for="(project, idx) in projects"
+        :key="idx"
+        :title="project.title"
+        :image="project.image"
+        :excerpt="project.excerpt"
+        :taxonomies="project.taxonomies"
+        :link="project.link"
+      />
     </div>
+  </div>
+  <div class="container flex flex-col">
+    <Reviews />
   </div>
 </template>
 
@@ -57,6 +67,7 @@ import ToAnim from '../assets/stop-blending-in/to.svg';
 import TimeAnim from '../assets/stop-blending-in/time.svg';
 import ItsAnim from '../assets/stop-blending-in/its.svg';
 import { ref, onMounted } from 'vue';
+import { useProjects } from '../composables/useProjects';
 
 // Ref for GlitchingText component to control animation
 const glitchTextRef = ref(null);
@@ -84,33 +95,9 @@ const svgs = [
   { component: OutAnim, color: 'fill-id-purple' },
 ];
 
-// State for fetched WordPress projects
-const projects = ref([]);
-
-// Fetch project data from WordPress REST API on mount
-onMounted(async () => {
-  try {
-    const res = await fetch('https://indago-v2.local/wp-json/wp/v2/projects?_embed&orderby=menu_order&order=asc');
-    const data = await res.json();
-    projects.value = data.map(project => {
-      let image = '';
-      if (project._embedded?.['wp:featuredmedia']?.[0]) {
-        image = project._embedded['wp:featuredmedia'][0].source_url;
-      }
-      let subtitle = '';
-      if (project._embedded?.['wp:term']?.[0]) {
-        subtitle = project._embedded['wp:term'][0].map(cat => cat.name).join(', ');
-      }
-      return {
-        title: project.title.rendered,
-        subtitle,
-        image,
-      };
-    });
-  } catch (e) {
-    // Error handling for failed fetch (optional)
-  }
-});
+// Use the useProjects composable
+const { projects, loading: projectsLoading, error: projectsError, fetchProjects } = useProjects();
+onMounted(fetchProjects);
 
 // Tracks if the user has scrolled the page
 const userScrolled = ref(false);
@@ -137,6 +124,7 @@ onMounted(() => {
 
 // Cleanup event listeners on unmount
 import { onUnmounted } from 'vue';
+import Reviews from '../components/Reviews.vue';
 onUnmounted(() => {
   window.removeEventListener('reset-glitch', resetGlitchText);
 });

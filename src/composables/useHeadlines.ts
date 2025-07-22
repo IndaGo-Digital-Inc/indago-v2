@@ -20,7 +20,7 @@ export function useHeadlines() {
         try {
             // Adjust the endpoint if your WP site is not at root
             const res = await fetch(
-                "/wp-json/wp/v2/headlines?_fields=id,title.rendered"
+                "/wp-json/wp/v2/headlines?_fields=id,title.rendered&orderby=menu_order&order=asc"
             );
             if (!res.ok) throw new Error("Failed to fetch headlines");
             const data = await res.json();
