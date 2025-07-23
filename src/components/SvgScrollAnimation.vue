@@ -1,12 +1,8 @@
 <template>
   <div ref="svgContainer" class="w-full svg-perspective svg-container relative">
     <div ref="rotatingPrism" class="w-full max-w-[60vw] m-x-auto h-full relative" style="transform-style: preserve-3d;">
-      <div 
-        v-for="(svg, index) in svgs" 
-        :key="index" 
-        class="absolute top-0 left-0 w-[full] h-full svg-face"
-        :style="getFaceStyle(index)"
-      >
+      <div v-for="(svg, index) in svgs" :key="index" class="absolute top-0 left-0 w-[full] h-full svg-face"
+        :style="getFaceStyle(index)">
         <component :is="svg.component" class="w-full h-full block" :class="svg.color" />
       </div>
     </div>
@@ -60,10 +56,10 @@ function handleScroll() {
 
   // 4. Calculate the current scroll position relative to the new start point.
   const currentScroll = animationStartPoint - rect.top;
-  
+
   // 5. Calculate progress (0 to 1) over the new, larger distance.
   const progress = Math.max(0, Math.min(1, currentScroll / scrollDistance));
-  
+
   const totalRotation = numSvgs.value * 360 * rotationMultiplier.value;
   const currentRotation = progress * totalRotation;
 
