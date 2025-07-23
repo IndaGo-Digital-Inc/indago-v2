@@ -1,0 +1,1 @@
+import{_ as r,b as t,e as s,d as c}from"./main-9X-PRKrW.js";const n={},o={class:"page-content"};function a(l,e){return c(),t("div",o,e[0]||(e[0]=[s("h2",null,"Services Page",-1),s("p",null,"See our services here.",-1)]))}const i=r(n,[["render",a]]);export{i as default};

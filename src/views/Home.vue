@@ -13,8 +13,8 @@
     </div>
   </section>
   <section class="container flex flex-col">
-    <div class="flex flex-col items-center justify-center w-full gap-[100px] pt-[60px] pb-[60px]">
-      <SvgScrollAnimation :svgs="standOutSvgs" class="max-w-[65vw]" />
+    <div class="flex flex-col items-center justify-center w-full gap-[180px] pt-[180px] pb-[60px]">
+      <SvgScrollAnimation :svgs="standOutSvgs" />
       <p class="text-id-light-grey">
         IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive
         measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented
@@ -62,6 +62,9 @@ import ContactForm from '../components/ContactForm.vue';
 import Reviews from '../components/Reviews.vue';
 
 // Assets
+// import StopAnim from '../assets/stop-blending-in/stop.svg';
+// import BlendingAnim from '../assets/stop-blending-in/blending.svg';
+// import InAnim from '../assets/stop-blending-in/in.svg';
 import ItsAnim from '../assets/stop-blending-in/its.svg';
 import TimeAnim from '../assets/stop-blending-in/time.svg';
 import ToAnim from '../assets/stop-blending-in/to.svg';
@@ -73,13 +76,20 @@ import TangibleAnim from '../assets/trusted-partners/tangible.svg';
 import ResultsAnim from '../assets/trusted-partners/results.svg';
 
 const standOutSvgs = [
-  { component: ItsAnim, color: 'fill-id-yellow' }, { component: TimeAnim, color: 'fill-id-yellow' },
-  { component: ToAnim, color: 'fill-id-yellow' }, { component: StandAnim, color: 'fill-id-yellow' },
+  // { component: StopAnim, color: 'fill-id-yellow' },  
+  // { component: BlendingAnim, color: 'fill-id-yellow' },
+  // { component: InAnim, color: 'fill-id-yellow' },
+  { component: ItsAnim, color: 'fill-id-yellow' },  
+  { component: TimeAnim, color: 'fill-id-yellow' },
+  { component: ToAnim, color: 'fill-id-yellow' },
+  { component: StandAnim, color: 'fill-id-yellow' },
   { component: OutAnim, color: 'fill-id-yellow' },
 ];
 const trustedPartnersSvgs = [
-  { component: TrustedAnim, color: 'fill-id-purple' }, { component: PartnerAnim, color: 'fill-id-purple' },
-  { component: TangibleAnim, color: 'fill-id-purple' }, { component: ResultsAnim, color: 'fill-id-purple' },
+  { component: TrustedAnim, color: 'fill-id-purple' },
+  { component: PartnerAnim, color: 'fill-id-purple' },
+  { component: TangibleAnim, color: 'fill-id-purple' },
+  { component: ResultsAnim, color: 'fill-id-purple' },
 ];
 
 // --- HEADLINE STATE MANAGEMENT ---
