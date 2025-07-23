@@ -1,9 +1,9 @@
 <template>
   <article
-    class="project-card flex flex-col items-start justify-start pt-[30px] pb-[60px] border-t border-id-dark-grey">
+    class="project-card flex flex-col items-start justify-start pt-[40px] pb-[20px] border-t border-id-dark-grey">
     <div class="card-header cursor-pointer w-full" @click="toggleContent">
       <div class="w-full flex gap-[20px]">
-        <div class="w-1/2 flex flex-col gap-[3px]">
+        <div class="w-1/2 flex flex-col gap-[3px] relative">
           <h4 class="color-id-light-grey">{{ title }}</h4>
           <template v-if="taxonomies?.category">
             <h5 v-for="category in taxonomies.category" :key="category.id" class="color-id-medium-grey pt-[5px]">
@@ -11,8 +11,11 @@
             </h5>
           </template>
         </div>
-        <div class="w-1/2">
+        <div class="w-1/2 relative">
           <img :src="image" :alt="title" />
+          <ChevronDown
+            class="w-full max-w-[14px] fill-id-medium-grey absolute bottom-[-40px] right-0 transition-transform duration-300 ease-in-out"
+            :class="{ 'rotate-180': contentVisible }" />
         </div>
       </div>
     </div>
@@ -52,6 +55,7 @@ import { ref, computed } from 'vue';
 
 // --- Components ---
 import ArrowButton from './ArrowButton.vue';
+import ChevronDown from '../assets/id-chevron-down.svg';
 
 // --- Props ---
 const props = defineProps({
@@ -109,6 +113,10 @@ function leave(el) {
 </script>
 
 <style scoped>
+.project-card+.project-card {
+  border-top-width: 1px;
+}
+
 .project-card img {
   display: block;
   width: 100%;

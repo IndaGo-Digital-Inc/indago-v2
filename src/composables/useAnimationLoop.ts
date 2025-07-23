@@ -1,3 +1,5 @@
+// useAnimationLoop.ts
+
 import { ref, onUnmounted } from 'vue';
 
 // This composable takes a callback function to run on each frame.

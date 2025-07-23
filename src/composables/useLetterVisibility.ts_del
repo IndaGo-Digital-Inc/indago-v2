@@ -2,7 +2,7 @@
 // Handles reveal/hide logic and state transitions for animated text
 import { Ref } from "vue";
 import { updateLetterVisibility } from "./useGlitchUtils";
-import { GlitchConfig } from "./useGlitchLifecycle";
+import { GlitchConfig } from "./useGlitchLifecycle.ts_del";
 
 /**
  * useLetterVisibility composable

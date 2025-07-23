@@ -1,9 +1,9 @@
 <template>
   <div ref="svgContainer" class="w-full svg-perspective svg-container relative">
-    <div ref="rotatingPrism" class="w-full max-w-[60vw] m-x-auto h-full relative" style="transform-style: preserve-3d;">
+    <div ref="rotatingPrism" class="w-full m-x-auto h-full relative" style="transform-style: preserve-3d;">
       <div v-for="(svg, index) in svgs" :key="index" class="absolute top-0 left-0 w-[full] h-full svg-face"
         :style="getFaceStyle(index)">
-        <component :is="svg.component" class="w-full h-full block" :class="svg.color" />
+        <component :is="svg.component" class="h-full block" :class="svg.color" />
       </div>
     </div>
   </div>
@@ -17,10 +17,15 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  // --- NEW ---
+  // Added a prop to control the rotation axis.
+  direction: {
+    type: String,
+    default: 'vertical', // 'vertical' (rotateX) or 'horizontal' (rotateY)
+    validator: (value) => ['vertical', 'horizontal'].includes(value),
+  }
 });
 
-// Using the multiplier from our previous conversation.
-// Set to 1 / numSvgs.value for a single 360-degree rotation.
 const rotationMultiplier = computed(() => (props.svgs.length > 0 ? 3 / props.svgs.length : 1));
 
 const svgContainer = ref(null);
@@ -30,46 +35,43 @@ const translateZ = ref(0);
 const numSvgs = computed(() => props.svgs.length);
 const anglePerFace = computed(() => 360 / numSvgs.value);
 
+// --- MODIFIED ---
+// This function now applies either rotateX or rotateY based on the `direction` prop.
 function getFaceStyle(index) {
   if (!translateZ.value) return {};
   const rotation = index * anglePerFace.value;
+  const rotateProperty = props.direction === 'vertical' ? 'rotateX' : 'rotateY';
   return {
-    transform: `rotateX(${rotation}deg) translateZ(${translateZ.value}px)`,
+    transform: `${rotateProperty}(${rotation}deg) translateZ(${translateZ.value}px)`,
   };
 }
 
+// --- MODIFIED ---
+// The main scroll handler now also uses the `direction` prop to set the correct rotation.
 function handleScroll() {
   if (!svgContainer.value || !rotatingPrism.value) return;
 
   const rect = svgContainer.value.getBoundingClientRect();
   const viewportHeight = window.innerHeight;
 
-  // --- MODIFIED LOGIC ---
-  // 1. Define the padding in pixels (10vh = 10% of viewport height).
   const scrollPadding = viewportHeight * 0.10;
-
-  // 2. The total animation distance now includes the padding at the top and bottom.
   const scrollDistance = viewportHeight + rect.height + (2 * scrollPadding);
-
-  // 3. The animation's starting point is now `20vh` below the bottom of the viewport.
   const animationStartPoint = viewportHeight + scrollPadding;
-
-  // 4. Calculate the current scroll position relative to the new start point.
   const currentScroll = animationStartPoint - rect.top;
-
-  // 5. Calculate progress (0 to 1) over the new, larger distance.
   const progress = Math.max(0, Math.min(1, currentScroll / scrollDistance));
 
   const totalRotation = numSvgs.value * 360 * rotationMultiplier.value;
   const currentRotation = progress * totalRotation;
 
-  rotatingPrism.value.style.transform = `rotateX(-${currentRotation}deg)`;
+  const rotateProperty = props.direction === 'vertical' ? 'rotateX' : 'rotateY';
+  rotatingPrism.value.style.transform = `${rotateProperty}(-${currentRotation}deg)`;
 }
 
 onMounted(() => {
   nextTick(() => {
     if (svgContainer.value && numSvgs.value > 0) {
       const height = svgContainer.value.offsetHeight;
+      // This calculation works for both X and Y rotation without changes.
       translateZ.value = (height / 2) / Math.tan(Math.PI / numSvgs.value);
       handleScroll();
     }
@@ -84,24 +86,26 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/*
-  The container needs a defined height for the geometry calculation (translateZ) to work correctly.
-  You can adjust this value as needed for your layout.
-*/
+/* No changes are needed here */
 .svg-container {
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: contain;
+  padding: 0 40px;
+  /* object-fit: contain; */
 }
 
-/* This creates the 3D space for the rotation effect. */
+.svg-container svg {
+  width: 100%;
+  /* max-width: 80%; */
+  margin: 0 auto;
+  /* padding: 0 20px; */
+  ;
+}
+
 .svg-perspective {
   perspective: 1000px;
 }
 
-/* Hiding the back of the faces prevents flickering and visual artifacts 
-  during the 3D rotation. 
-*/
 .svg-face {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;

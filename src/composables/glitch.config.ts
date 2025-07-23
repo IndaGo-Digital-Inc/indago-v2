@@ -5,7 +5,6 @@ export const config = {
     maxTransition: 0.4,
     numGlitchMin: 1,
     numGlitchMax: 6,
-    hideMultiplier: 4,
     minRotate: -180,
     maxRotate: 180,
     minSkew: -45,

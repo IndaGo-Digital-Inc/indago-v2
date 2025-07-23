@@ -1,7 +1,7 @@
 // useGlitchUtils.ts
 // Utility functions for glitch animation and visibility
 
-import { GlitchConfig } from "./useGlitchLifecycle";
+import { GlitchConfig } from "./useGlitchLifecycle.ts_del";
 
 export function pickWeightedColor(
     config: GlitchConfig,

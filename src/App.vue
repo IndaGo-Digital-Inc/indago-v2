@@ -1,6 +1,6 @@
 <template>
-	<Header ref="headerRef" @reset-animation="emitter.emit('reset-animation')" />
-	<main class="main-content bg-id-black font-sans overflow-hidden">
+	<Header ref="headerRef" @reset-animation="emitter.emit('reset-animation')" class="z-2" />
+	<main class="main-content font-sans overflow-hidden z-1 bg-id-black">
 		<router-view />
 	</main>
 	<Footer />

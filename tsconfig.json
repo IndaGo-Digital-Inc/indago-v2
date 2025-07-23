@@ -15,6 +15,6 @@
     "noEmit": true,
     "types": ["vite/client"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/composables/useGlitchLifecycle.ts_del", "src/composables/useGlitchAnimation.ts_del", "src/composables/useLetterVisibility.ts_Del"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,9 +1,9 @@
-<!-- Home.vue -->
 <template>
-  <section class="container relative">
-    <div class="flex flex-col items-start justify-center w-full min-h-screen">
-      <div class="flex flex-col gap-[30px] w-full mx-auto pb-[10vh]">
-        <GlitchingText :headline="currentHeadline" @animation-complete="showNextHeadline" @hiding="onGlitchHiding" />
+  <section class="container relative bg-id-black">
+    <div class="flex flex-col items-start justify-center w-full min-h-screen bg-id-black">
+      <div class="flex flex-col gap-[30px] w-full mx-auto pb-[10vh] bg-id-black hero-section">
+        <GlitchingText ref="heroGlitch" :headline="currentHeadline" @animation-complete="showNextHeadline"
+          :options="glitchOptions" />
       </div>
       <div class="w-full flex justify-end">
         <ArrowButton class="absolute bottom-[50px] go-digital-btn fade-in" :link="'#contact-form'"
@@ -12,28 +12,34 @@
       </div>
     </div>
   </section>
-  <section class="container flex flex-col">
-    <div class="flex flex-col items-center justify-center w-full gap-[180px] pt-[180px] pb-[60px]">
-      <SvgScrollAnimation :svgs="standOutSvgs" />
-      <p class="text-id-light-grey">
+
+  <section class="container flex flex-col bg-id-black">
+    <div class="flex flex-col items-center justify-center w-full gap-[230px] pt-[150px] pb-[184px] bg-id-black">
+      <SvgScrollAnimation :svgs="standOutSvgs" :direction="'vertical'" />
+      <p class="text-id-light-grey max-w-[200px] text-center">
         IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive
         measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented
         digital marketing to fuel your online success.
       </p>
     </div>
   </section>
-  <section class="container flex flex-col pt-[32px]">
+
+  <section class="container flex flex-col gap-[40px] bg-id-black">
+    <GlitchingText :headline="'Select Projects'" :options="glitchOptions" loop />
     <ProjectCard v-for="(project, idx) in projects" :key="idx" :title="project.title" :image="project.image"
       :excerpt="project.excerpt" :taxonomies="project.taxonomies" :link="project.link"
       :mobile_project_image="project.mobile_project_image" :desktop_project_image="project.desktop_project_image" />
   </section>
-  <section class="container flex flex-col">
+
+  <section class="container flex flex-col bg-id-black">
     <Reviews />
   </section>
-  <section class="container flex flex-col">
+
+  <section class="container flex flex-col bg-id-black">
     <ServicesList />
   </section>
-  <section class="container flex flex-col">
+
+  <section class="container flex flex-col bg-id-black">
     <SvgScrollAnimation :svgs="trustedPartnersSvgs" />
     <p class="">
       IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive
@@ -41,7 +47,8 @@
       digital marketing to fuel your online success.
     </p>
   </section>
-  <section class="container flex flex-col gap-[90px]">
+
+  <section class="container flex flex-col gap-[90px] bg-id-black">
     <h2>It’s time to transform your online presence. Contact us today for a free consultation.</h2>
     <ContactForm />
   </section>
@@ -50,7 +57,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useProjects } from '../composables/useProjects';
-import { useHeadlines } from '../composables/useHeadlines.ts'; // Ensure this is imported
+import { useHeadlines } from '../composables/useHeadlines.ts';
 
 // Components
 import SvgScrollAnimation from '../components/SvgScrollAnimation.vue';
@@ -62,9 +69,6 @@ import ContactForm from '../components/ContactForm.vue';
 import Reviews from '../components/Reviews.vue';
 
 // Assets
-// import StopAnim from '../assets/stop-blending-in/stop.svg';
-// import BlendingAnim from '../assets/stop-blending-in/blending.svg';
-// import InAnim from '../assets/stop-blending-in/in.svg';
 import ItsAnim from '../assets/stop-blending-in/its.svg';
 import TimeAnim from '../assets/stop-blending-in/time.svg';
 import ToAnim from '../assets/stop-blending-in/to.svg';
@@ -75,11 +79,11 @@ import PartnerAnim from '../assets/trusted-partners/partners.svg';
 import TangibleAnim from '../assets/trusted-partners/tangible.svg';
 import ResultsAnim from '../assets/trusted-partners/results.svg';
 
+// 2. Create a ref to hold the component instance
+const heroGlitch = ref(null);
+
 const standOutSvgs = [
-  // { component: StopAnim, color: 'fill-id-yellow' },  
-  // { component: BlendingAnim, color: 'fill-id-yellow' },
-  // { component: InAnim, color: 'fill-id-yellow' },
-  { component: ItsAnim, color: 'fill-id-yellow' },  
+  { component: ItsAnim, color: 'fill-id-yellow' },
   { component: TimeAnim, color: 'fill-id-yellow' },
   { component: ToAnim, color: 'fill-id-yellow' },
   { component: StandAnim, color: 'fill-id-yellow' },
@@ -96,44 +100,44 @@ const trustedPartnersSvgs = [
 const { headlines, fetchHeadlines } = useHeadlines();
 const currentHeadlineIndex = ref(0);
 const currentHeadline = ref('');
-// const showGoDigital = ref(false); // Local state to control the button
 
-// Function to advance to the next headline
+// 3. Update this function to explicitly command the animation to start
 const showNextHeadline = () => {
   if (headlines.value.length === 0) {
-    // Handle empty headlines gracefully
     return;
   }
   const headlineObj = headlines.value[currentHeadlineIndex.value];
-  let headlineText = '';
-  if (headlineObj && headlineObj.title) {
-    headlineText = headlineObj.title;
-  }
-  if (headlineText) {
-    currentHeadline.value = headlineText;
-  } else {
-    currentHeadline.value = '';
-  }
+  currentHeadline.value = headlineObj?.title || '';
   currentHeadlineIndex.value = (currentHeadlineIndex.value + 1) % headlines.value.length;
+
+  // After updating the headline, command the child component to run its animation
+  if (heroGlitch.value) {
+    heroGlitch.value.start(currentHeadline.value);
+  }
 };
 
-// Event handler for when the animation enters the hiding phase
-const onGlitchHiding = () => {
-  // showGoDigital.value = true;
-};
+const glitchOptions = ref({
+  minDelay: 20,
+  maxDelay: 200,
+  minTransition: 0.1,
+  maxTransition: 0.2,
+  numGlitchMin: 1,
+  numGlitchMax: 12,
+  modeChangeDelay: 3000, // Added a slight pause
+  resetDelay: 500,
+});
 
 // --- OTHER COMPOSABLES AND LOGIC ---
 const { projects, fetchProjects } = useProjects();
 
 onMounted(async () => {
-  // Fetch all necessary data
+  // Fetch all necessary data when the component mounts
   await Promise.all([
     fetchHeadlines(),
     fetchProjects()
   ]);
-  // Start the first headline animation
+  // Start the first headline animation after data is fetched
   showNextHeadline();
 });
 </script>
-
 <style scoped></style>

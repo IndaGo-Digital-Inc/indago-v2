@@ -1,0 +1,1 @@
+import{_ as o,b as n,e as t,d as s}from"./main-DBlb4tSD.js";const r={},a={class:"page-content"};function c(l,e){return s(),n("div",a,e[0]||(e[0]=[t("h2",null,"About Page",-1),t("p",null,"Learn more about us here.",-1)]))}const _=o(r,[["render",c]]);export{_ as default};
