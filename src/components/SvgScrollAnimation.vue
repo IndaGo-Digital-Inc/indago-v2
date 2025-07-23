@@ -57,10 +57,10 @@ onMounted(() => {
   perspective: 1000px;
 }
 
-.svg-container {
+/* .svg-container {
   aspect-ratio: 16 / 9;
   overflow: hidden;
-}
+} */
 
 /* 4. Updated the transition classes to perform the rotation */
 .rotate-x-enter-active,
