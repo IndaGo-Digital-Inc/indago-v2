@@ -23,7 +23,22 @@ function indago_digital_register_types() {
         'name' => _x('Services', 'Post type general name', 'indagodigital'),
         'singular_name' => _x('Service', 'Post type singular name', 'indagodigital'),
         'menu_name' => _x('Services', 'Admin Menu text', 'indagodigital'),
-        // ... other labels
+        'add_new' => __('Add New Service', 'indagodigital'),
+        'add_new_item' => __('Add New Service', 'indagodigital'),
+        'edit_item' => __('Edit Service', 'indagodigital'),
+        'new_item' => __('New Service', 'indagodigital'),
+        'view_item' => __('View Service', 'indagodigital'),
+        'search_items' => __('Search Services', 'indagodigital'),
+        'not_found' => __('No services found', 'indagodigital'),
+        'not_found_in_trash' => __('No services found in Trash', 'indagodigital'),
+        'parent_item_colon' => __('Parent Service:', 'indagodigital'),
+        'all_items' => __('All Services', 'indagodigital'),
+        'archives' => __('Service Archives', 'indagodigital'),
+        'insert_into_item' => __('Insert into service', 'indagodigital'),
+        'uploaded_to_this_item' => __('Uploaded to this service', 'indagodigital'),
+        'filter_items_list' => __('Filter services list', 'indagodigital'),
+        'items_list_navigation' => __('Services list navigation', 'indagodigital'),
+        'items_list' => __('Services list', 'indagodigital'),
     ];
     $service_args = [
         'labels' => $service_labels,
@@ -34,7 +49,7 @@ function indago_digital_register_types() {
         'menu_icon' => 'dashicons-laptop',
         'supports' => ['title', 'editor', 'excerpt', 'thumbnail', 'page-attributes'],
         'has_archive' => true,
-        'rewrite' => ['slug' => 'service'], // This slug is fine.
+        'rewrite' => ['slug' => 'service'],
         'show_in_rest' => true,
         'rest_base' => 'services',
     ];
@@ -46,7 +61,22 @@ function indago_digital_register_types() {
         'name' => _x('Projects', 'Post type general name', 'indagodigital'),
         'singular_name' => _x('Project', 'Post type singular name', 'indagodigital'),
         'menu_name' => _x('Projects', 'Admin Menu text', 'indagodigital'),
-        // ... other labels
+        'add_new' => __('Add New Project', 'indagodigital'),
+        'add_new_item' => __('Add New Project', 'indagodigital'),
+        'edit_item' => __('Edit Project', 'indagodigital'),
+        'new_item' => __('New Project', 'indagodigital'),
+        'view_item' => __('View Project', 'indagodigital'),
+        'search_items' => __('Search Projects', 'indagodigital'),
+        'not_found' => __('No projects found', 'indagodigital'),
+        'not_found_in_trash' => __('No projects found in Trash', 'indagodigital'),
+        'parent_item_colon' => __('Parent Project:', 'indagodigital'),
+        'all_items' => __('All Projects', 'indagodigital'),
+        'archives' => __('Project Archives', 'indagodigital'),
+        'insert_into_item' => __('Insert into project', 'indagodigital'),
+        'uploaded_to_this_item' => __('Uploaded to this project', 'indagodigital'),
+        'filter_items_list' => __('Filter projects list', 'indagodigital'),
+        'items_list_navigation' => __('Projects list navigation', 'indagodigital'),
+        'items_list' => __('Projects list', 'indagodigital'),
     ];
     $project_args = [
         'labels' => $project_labels,
@@ -69,7 +99,22 @@ function indago_digital_register_types() {
         'name' => _x('Reviews', 'Post Type General Name', 'indagodigital'),
         'singular_name' => _x('Review', 'Post Type Singular Name', 'indagodigital'),
         'menu_name' => __('Reviews', 'indagodigital'),
-        // ... other labels
+        'add_new' => __('Add New Review', 'indagodigital'),
+        'add_new_item' => __('Add New Review', 'indagodigital'),
+        'edit_item' => __('Edit Review', 'indagodigital'),
+        'new_item' => __('New Review', 'indagodigital'),
+        'view_item' => __('View Review', 'indagodigital'),
+        'search_items' => __('Search Reviews', 'indagodigital'),
+        'not_found' => __('No reviews found', 'indagodigital'),
+        'not_found_in_trash' => __('No reviews found in Trash', 'indagodigital'),
+        'parent_item_colon' => __('Parent Review:', 'indagodigital'),
+        'all_items' => __('All Reviews', 'indagodigital'),
+        'archives' => __('Review Archives', 'indagodigital'),
+        'insert_into_item' => __('Insert into review', 'indagodigital'),
+        'uploaded_to_this_item' => __('Uploaded to this review', 'indagodigital'),
+        'filter_items_list' => __('Filter reviews list', 'indagodigital'),
+        'items_list_navigation' => __('Reviews list navigation', 'indagodigital'),
+        'items_list' => __('Reviews list', 'indagodigital'),
     ];
     $review_args = [
         'label' => __('Review', 'indagodigital'),
@@ -94,7 +139,22 @@ function indago_digital_register_types() {
         'name' => _x('Headlines', 'Post type general name', 'indagodigital'),
         'singular_name' => _x('Headline', 'Post type singular name', 'indagodigital'),
         'menu_name' => _x('Headlines', 'Admin Menu text', 'indagodigital'),
-        // ... other labels
+        'add_new' => __('Add New Headline', 'indagodigital'),
+        'add_new_item' => __('Add New Headline', 'indagodigital'),
+        'edit_item' => __('Edit Headline', 'indagodigital'),
+        'new_item' => __('New Headline', 'indagodigital'),
+        'view_item' => __('View Headline', 'indagodigital'),
+        'search_items' => __('Search Headlines', 'indagodigital'),
+        'not_found' => __('No headlines found', 'indagodigital'),
+        'not_found_in_trash' => __('No headlines found in Trash', 'indagodigital'),
+        'parent_item_colon' => __('Parent Headline:', 'indagodigital'),
+        'all_items' => __('All Headlines', 'indagodigital'),
+        'archives' => __('Headline Archives', 'indagodigital'),
+        'insert_into_item' => __('Insert into headline', 'indagodigital'),
+        'uploaded_to_this_item' => __('Uploaded to this headline', 'indagodigital'),
+        'filter_items_list' => __('Filter headlines list', 'indagodigital'),
+        'items_list_navigation' => __('Headlines list navigation', 'indagodigital'),
+        'items_list' => __('Headlines list', 'indagodigital'),
     ];
     $headline_args = [
         'labels' => $headline_labels,
@@ -112,11 +172,21 @@ function indago_digital_register_types() {
 
 
     // --- PROJECT SERVICE TAXONOMY (for Projects) ---
-    // This taxonomy triggers the creation of posts in the 'Service' CPT.
     $service_tax_labels = [
         'name' => _x('Services', 'taxonomy general name', 'indagodigital'),
         'singular_name' => _x('Service', 'taxonomy singular name', 'indagodigital'),
         'menu_name' => __('Services', 'indagodigital'),
+        'all_items' => __('All Services', 'indagodigital'),
+        'edit_item' => __('Edit Service', 'indagodigital'),
+        'view_item' => __('View Service', 'indagodigital'),
+        'update_item' => __('Update Service', 'indagodigital'),
+        'add_new_item' => __('Add New Service', 'indagodigital'),
+        'new_item_name' => __('New Service Name', 'indagodigital'),
+        'separate_items_with_commas' => __('Separate services with commas', 'indagodigital'),
+        'add_or_remove_items' => __('Add or remove services', 'indagodigital'),
+        'choose_from_most_used' => __('Choose from the most used services', 'indagodigital'),
+        'not_found' => __('No services found.', 'indagodigital'),
+        'back_to_items' => __('Back to services', 'indagodigital'),
     ];
     $service_tax_args = [
         'hierarchical' => false,
@@ -124,11 +194,11 @@ function indago_digital_register_types() {
         'show_ui' => true,
         'show_admin_column' => true,
         'query_var' => true,
-        'rewrite' => ['slug' => 'project-service'], // FIXED: Changed from 'service' to avoid conflict with the post type slug.
+        'rewrite' => ['slug' => 'project-service'],
         'show_in_rest' => true,
-        'rest_base' => 'project-services', // FIXED: Updated for clarity.
+        'rest_base' => 'project-services',
     ];
-    register_taxonomy('project-service', ['project'], $service_tax_args); // FIXED: Changed slug from 'service'.
+    register_taxonomy('project-service', ['project'], $service_tax_args);
 
 
     // --- PROJECT CATEGORY TAXONOMY ---
@@ -136,6 +206,17 @@ function indago_digital_register_types() {
         'name' => _x('Categories', 'taxonomy general name', 'indagodigital'),
         'singular_name' => _x('Category', 'taxonomy singular name', 'indagodigital'),
         'menu_name' => __('Categories', 'indagodigital'),
+        'all_items' => __('All Categories', 'indagodigital'),
+        'edit_item' => __('Edit Category', 'indagodigital'),
+        'view_item' => __('View Category', 'indagodigital'),
+        'update_item' => __('Update Category', 'indagodigital'),
+        'add_new_item' => __('Add New Category', 'indagodigital'),
+        'new_item_name' => __('New Category Name', 'indagodigital'),
+        'parent_item' => __('Parent Category', 'indagodigital'),
+        'parent_item_colon' => __('Parent Category:', 'indagodigital'),
+        'search_items' => __('Search Categories', 'indagodigital'),
+        'not_found' => __('No categories found.', 'indagodigital'),
+        'back_to_items' => __('Back to categories', 'indagodigital'),
     ];
     $proj_cat_args = [
         'hierarchical' => true,
@@ -154,6 +235,17 @@ function indago_digital_register_types() {
         'name' => _x('Clients', 'taxonomy general name', 'indagodigital'),
         'singular_name' => _x('Client', 'taxonomy singular name', 'indagodigital'),
         'menu_name' => __('Clients', 'indagodigital'),
+        'all_items' => __('All Clients', 'indagodigital'),
+        'edit_item' => __('Edit Client', 'indagodigital'),
+        'view_item' => __('View Client', 'indagodigital'),
+        'update_item' => __('Update Client', 'indagodigital'),
+        'add_new_item' => __('Add New Client', 'indagodigital'),
+        'new_item_name' => __('New Client Name', 'indagodigital'),
+        'separate_items_with_commas' => __('Separate clients with commas', 'indagodigital'),
+        'add_or_remove_items' => __('Add or remove clients', 'indagodigital'),
+        'choose_from_most_used' => __('Choose from the most used clients', 'indagodigital'),
+        'not_found' => __('No clients found.', 'indagodigital'),
+        'back_to_items' => __('Back to clients', 'indagodigital'),
     ];
     $client_args = [
         'hierarchical' => false,
@@ -167,6 +259,255 @@ function indago_digital_register_types() {
     register_taxonomy('client', ['project', 'review'], $client_args);
 }
 add_action('init', 'indago_digital_register_types');
+
+
+// =========================================================================
+// CUSTOM FIELDS FOR 'PROJECT' POST TYPE
+// =========================================================================
+
+/**
+ * Add custom fields to the REST API response for the 'project' post type.
+ */
+function add_project_custom_fields_to_rest() {
+    register_rest_field('project', 'project_url', [
+        'get_callback' => fn($post) => get_post_meta($post['id'], 'project_url', true),
+        'update_callback' => fn($value, $post) => update_post_meta($post->ID, 'project_url', esc_url_raw($value)),
+        'schema' => ['type' => 'string', 'description' => 'URL of the project.', 'format' => 'uri', 'context' => ['view', 'edit']],
+    ]);
+    // NEW: Register REST field for Mobile Project Image
+    register_rest_field('project', 'mobile_project_image', [
+        'get_callback' => function($post_arr) {
+            $image_id = (int) get_post_meta($post_arr['id'], '_mobile_project_image_id', true);
+            if ($image_id) {
+                return [
+                    'id' => $image_id,
+                    'url' => wp_get_attachment_image_url($image_id, 'medium_large'), // Choose appropriate size
+                    'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: '',
+                ];
+            }
+            return null; // Return null if no image is set
+        },
+        'schema' => [
+            'description' => __( 'Mobile version of the project image.', 'indagodigital' ),
+            'type'        => ['object', 'null'],
+            'properties'  => [
+                'id'  => ['type' => 'integer'],
+                'url' => ['type' => 'string', 'format' => 'uri'],
+                'alt' => ['type' => 'string'],
+            ],
+            'context'     => [ 'view', 'edit' ],
+        ],
+    ]);
+    // NEW: Register REST field for Desktop Project Image
+    register_rest_field('project', 'desktop_project_image', [
+        'get_callback' => function($post_arr) {
+            $image_id = (int) get_post_meta($post_arr['id'], '_desktop_project_image_id', true);
+            if ($image_id) {
+                return [
+                    'id' => $image_id,
+                    'url' => wp_get_attachment_image_url($image_id, 'large'), // Choose appropriate size
+                    'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: '',
+                ];
+            }
+            return null; // Return null if no image is set
+        },
+        'schema' => [
+            'description' => __( 'Desktop version of the project image.', 'indagodigital' ),
+            'type'        => ['object', 'null'],
+            'properties'  => [
+                'id'  => ['type' => 'integer'],
+                'url' => ['type' => 'string', 'format' => 'uri'],
+                'alt' => ['type' => 'string'],
+            ],
+            'context'     => [ 'view', 'edit' ],
+        ],
+    ]);
+}
+add_action('rest_api_init', 'add_project_custom_fields_to_rest');
+
+/**
+ * Add the meta box for project details to the 'project' post editor.
+ */
+function add_project_meta_box() {
+    add_meta_box('project_details_meta_box', 'Project Details', 'render_project_meta_box_html', 'project', 'normal', 'high');
+    // NEW: Add meta box for Mobile/Desktop Project Images
+    add_meta_box('project_responsive_images_meta_box', 'Responsive Project Images', 'render_responsive_project_images_meta_box_html', 'project', 'normal', 'high');
+}
+add_action('add_meta_boxes', 'add_project_meta_box');
+
+/**
+ * Render the HTML for the custom fields meta box for Projects.
+ */
+function render_project_meta_box_html($post) {
+    wp_nonce_field('project_details_nonce_action', 'project_details_nonce');
+    $project_url = get_post_meta($post->ID, 'project_url', true);
+    ?>
+    <style>
+        .project-field { padding: 6px 0; }
+        .project-field label { font-weight: bold; display: block; margin-bottom: 4px; }
+        .project-field input[type="text"],
+        .project-field input[type="url"] {
+            width: 100%;
+            padding: 8px;
+            background: #f0f0f1;
+            border: 1px solid #ccc;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,.07);
+        }
+    </style>
+    <div class="project-field">
+        <label for="project_url_field">Project URL</label>
+        <input type="url" id="project_url_field" name="project_url_field" value="<?php echo esc_url($project_url); ?>" class="regular-text">
+        <p class="description">Enter the full URL for the project (e.g., https://www.example.com).</p>
+    </div>
+    <?php
+}
+
+/**
+ * Render the HTML for the Responsive Project Images meta box.
+ */
+function render_responsive_project_images_meta_box_html($post) {
+    wp_nonce_field('responsive_project_images_nonce_action', 'responsive_project_images_nonce');
+
+    $mobile_image_id = (int) get_post_meta($post->ID, '_mobile_project_image_id', true);
+    $desktop_image_id = (int) get_post_meta($post->ID, '_desktop_project_image_id', true);
+
+    $mobile_image_url = $mobile_image_id ? wp_get_attachment_image_url($mobile_image_id, 'thumbnail') : '';
+    $desktop_image_url = $desktop_image_id ? wp_get_attachment_image_url($desktop_image_id, 'thumbnail') : '';
+    ?>
+    <style>
+        .image-field-wrap {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        .image-field-wrap:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .image-field-wrap label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .image-preview {
+            max-width: 150px;
+            height: auto;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .image-preview.empty {
+            width: 150px;
+            height: 100px;
+            background: #f0f0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 14px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+    <div class="image-field-wrap">
+        <label for="mobile_project_image_field">Mobile Project Image</label>
+        <?php if ($mobile_image_url) : ?>
+            <img src="<?php echo esc_url($mobile_image_url); ?>" class="image-preview" id="mobile_image_preview">
+        <?php else : ?>
+            <div class="image-preview empty" id="mobile_image_preview">No Image Selected</div>
+        <?php endif; ?>
+        <input type="hidden" id="mobile_project_image_id" name="mobile_project_image_id" value="<?php echo esc_attr($mobile_image_id); ?>">
+        <div class="button-group">
+            <button type="button" class="button button-secondary select-image-button" data-field="mobile">Select Image</button>
+            <button type="button" class="button button-secondary remove-image-button" data-field="mobile" <?php echo $mobile_image_id ? '' : 'style="display:none;"'; ?>>Remove Image</button>
+        </div>
+        <p class="description">Upload or select an image for mobile display.</p>
+    </div>
+
+    <div class="image-field-wrap">
+        <label for="desktop_project_image_field">Desktop Project Image</label>
+        <?php if ($desktop_image_url) : ?>
+            <img src="<?php echo esc_url($desktop_image_url); ?>" class="image-preview" id="desktop_image_preview">
+        <?php else : ?>
+            <div class="image-preview empty" id="desktop_image_preview">No Image Selected</div>
+        <?php endif; ?>
+        <input type="hidden" id="desktop_project_image_id" name="desktop_project_image_id" value="<?php echo esc_attr($desktop_image_id); ?>">
+        <div class="button-group">
+            <button type="button" class="button button-secondary select-image-button" data-field="desktop">Select Image</button>
+            <button type="button" class="button button-secondary remove-image-button" data-field="desktop" <?php echo $desktop_image_id ? '' : 'style="display:none;"'; ?>>Remove Image</button>
+        </div>
+        <p class="description">Upload or select an image for desktop display.</p>
+    </div>
+    <?php
+}
+
+
+/**
+ * Save the custom meta box data for Projects.
+ */
+function save_project_meta_box_data($post_id) {
+    // Save Project URL
+    if (isset($_POST['project_details_nonce']) && wp_verify_nonce($_POST['project_details_nonce'], 'project_details_nonce_action')) {
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return $post_id;
+        if (isset($_POST['post_type']) && 'project' == $_POST['post_type'] && !current_user_can('edit_post', $post_id)) return $post_id;
+
+        if (isset($_POST['project_url_field'])) {
+            update_post_meta($post_id, 'project_url', esc_url_raw($_POST['project_url_field']));
+        }
+    }
+
+    // Save Responsive Project Image IDs
+    if (isset($_POST['responsive_project_images_nonce']) && wp_verify_nonce($_POST['responsive_project_images_nonce'], 'responsive_project_images_nonce_action')) {
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return $post_id;
+        if (isset($_POST['post_type']) && 'project' == $_POST['post_type'] && !current_user_can('edit_post', $post_id)) return $post_id;
+
+        // Mobile Image ID
+        if (isset($_POST['mobile_project_image_id'])) {
+            $mobile_image_id = (int) $_POST['mobile_project_image_id'];
+            if ($mobile_image_id > 0) {
+                update_post_meta($post_id, '_mobile_project_image_id', $mobile_image_id);
+            } else {
+                delete_post_meta($post_id, '_mobile_project_image_id'); // Remove if no image selected
+            }
+        }
+
+        // Desktop Image ID
+        if (isset($_POST['desktop_project_image_id'])) {
+            $desktop_image_id = (int) $_POST['desktop_project_image_id'];
+            if ($desktop_image_id > 0) {
+                update_post_meta($post_id, '_desktop_project_image_id', $desktop_image_id);
+            } else {
+                delete_post_meta($post_id, '_desktop_project_image_id'); // Remove if no image selected
+            }
+        }
+    }
+}
+add_action('save_post', 'save_project_meta_box_data');
+
+
+/**
+ * Enqueue scripts for the Project Gallery meta box.
+ */
+function enqueue_project_gallery_scripts($hook) {
+    global $post;
+    // Load scripts only on project edit screen
+    if ('post.php' != $hook && 'post-new.php' != $hook) {
+        return;
+    }
+    if ($post && 'project' === $post->post_type) {
+        wp_enqueue_media(); // Enqueue WordPress media scripts
+        wp_enqueue_script(
+            'project-responsive-image-uploader', // Unique handle
+            get_template_directory_uri() . '/js/project-responsive-image-uploader.js', // Your NEW JS file
+            ['jquery'], // Dependency: WordPress's bundled jQuery
+            filemtime(get_template_directory() . '/js/project-responsive-image-uploader.js'), // Versioning for cache busting
+            true // Load in footer
+        );
+    }
+}
+add_action('admin_enqueue_scripts', 'enqueue_project_gallery_scripts');
 
 
 // =========================================================================
@@ -185,8 +526,10 @@ function indago_digital_register_submission_cpt() {
         'view_item' => __('View Submission', 'indagodigital'),
         'add_new_item' => __('Add New Submission', 'indagodigital'),
         'edit_item' => __('Edit Submission', 'indagodigital'),
+        'new_item' => __('New Submission', 'indagodigital'),
         'search_items' => __('Search Submissions', 'indagodigital'),
         'not_found' => __('No submissions found', 'indagodigital'),
+        'not_found_in_trash' => __('No submissions found in Trash', 'indagodigital'),
     ];
     $args = [
         'label' => __('Submission', 'indagodigital'),
@@ -322,8 +665,8 @@ add_filter('manage_edit-submission_sortable_columns', 'make_submission_columns_s
 /**
  * When a 'project-service' term is created, create a matching 'service' post.
  */
-add_action('created_project-service', function($term_id) { // FIXED: Hook name changed from 'created_service'.
-    $term = get_term($term_id, 'project-service'); // FIXED: Use the new taxonomy slug.
+add_action('created_project-service', function($term_id) {
+    $term = get_term($term_id, 'project-service');
     if (!$term || is_wp_error($term)) return;
 
     $existing = get_posts([
@@ -348,7 +691,7 @@ add_action('created_project-service', function($term_id) { // FIXED: Hook name c
 /**
  * When a 'project-service' term is deleted, delete the matching 'service' post.
  */
-add_action('delete_project-service', function($term_id) { // FIXED: Hook name changed from 'delete_service'.
+add_action('delete_project-service', function($term_id) {
     $posts = get_posts([
         'post_type' => 'service',
         'meta_key' => '_service_term_id',
@@ -364,8 +707,8 @@ add_action('delete_project-service', function($term_id) { // FIXED: Hook name ch
 /**
  * When a 'project-service' term is updated, update the matching 'service' post title.
  */
-add_action('edited_project-service', function($term_id) { // FIXED: Hook name changed from 'edited_service'.
-    $term = get_term($term_id, 'project-service'); // FIXED: Use the new taxonomy slug.
+add_action('edited_project-service', function($term_id) {
+    $term = get_term($term_id, 'project-service');
     if (!$term || is_wp_error($term)) return;
 
     $posts = get_posts([
@@ -394,7 +737,7 @@ add_action('edited_project-service', function($term_id) { // FIXED: Hook name ch
  * On theme activation, sync all terms and posts to ensure data integrity.
  */
 function indago_digital_sync_all_service_terms_and_posts() {
-    $terms = get_terms(['taxonomy' => 'project-service', 'hide_empty' => false]); // FIXED
+    $terms = get_terms(['taxonomy' => 'project-service', 'hide_empty' => false]);
     foreach ($terms as $term) {
         $existing = get_posts(['post_type' => 'service', 'meta_key' => '_service_term_id', 'meta_value' => $term->term_id, 'post_status' => 'any', 'numberposts' => 1]);
         if (!$existing) {
@@ -407,7 +750,7 @@ function indago_digital_sync_all_service_terms_and_posts() {
     $posts = get_posts(['post_type' => 'service', 'post_status' => 'any', 'numberposts' => -1]);
     foreach ($posts as $post) {
         $term_id = get_post_meta($post->ID, '_service_term_id', true);
-        if ($term_id && !get_term($term_id, 'project-service')) { // FIXED
+        if ($term_id && !get_term($term_id, 'project-service')) {
             wp_delete_post($post->ID, true);
         }
     }
@@ -568,6 +911,9 @@ function indago_digital_enqueue_vite_assets() {
     }
 }
 add_action('wp_enqueue_scripts', 'indago_digital_enqueue_vite_assets');
+
+// Prevent WordPress from automatically scaling down large images on upload.
+add_filter( 'big_image_size_threshold', '__return_false' );
 
 
 // =========================================================================
@@ -749,8 +1095,8 @@ function indago_digital_register_company_info_settings() {
     // 3. Add the fields for each piece of information
     add_settings_field('company_name', 'Company Name', 'indago_digital_render_field_html', 'company_info', 'company_info_main_section', ['id' => 'company_name', 'type' => 'text']);
     add_settings_field('company_location', 'Location', 'indago_digital_render_field_html', 'company_info', 'company_info_main_section', ['id' => 'company_location', 'type' => 'text']);
-    add_settings_field('company_phone', 'Phone Number', 'indago_digital_render_field_html', 'company_info', 'company_info_main_section', ['id' => 'company_phone', 'type' => 'tel']);
-    add_settings_field('company_email', 'Email Address', 'indago_digital_render_field_html', 'company_info', 'company_info_main_section', ['id' => 'company_email', 'type' => 'email']);
+    add_settings_field('company_phone', 'Phone Number', 'indago_digital_render_field_html', 'company_info', 'company_phone_main_section', ['id' => 'company_phone', 'type' => 'tel']);
+    add_settings_field('company_email', 'Email Address', 'indago_digital_render_field_html', 'company_info', 'company_email_main_section', ['id' => 'company_email', 'type' => 'email']);
 }
 add_action('admin_init', 'indago_digital_register_company_info_settings');
 

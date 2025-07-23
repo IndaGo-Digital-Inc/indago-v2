@@ -2,7 +2,7 @@
 /**
  * The main template file for the AI Shirt Studio theme.
  *
- * @package AI_Shirt_Studio_Theme
+ * @package indago-v2
  */
 ?>
 

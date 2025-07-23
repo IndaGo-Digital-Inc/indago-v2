@@ -1,7 +1,7 @@
 <template>
   <article
-    class="project-card flex flex-col items-start justify-start mt-[60px] pt-[30px] border-t border-id-dark-grey">
-    <div class="card-header cursor-pointer" @click="toggleContent">
+    class="project-card flex flex-col items-start justify-start pt-[30px] pb-[60px] border-t border-id-dark-grey">
+    <div class="card-header cursor-pointer w-full" @click="toggleContent">
       <div class="w-full flex gap-[20px]">
         <div class="w-1/2 flex flex-col gap-[3px]">
           <h4 class="color-id-light-grey">{{ title }}</h4>
@@ -18,7 +18,9 @@
     </div>
 
     <transition @before-enter="beforeEnter" @enter="enter" @before-leave="beforeLeave" @leave="leave">
-      <div v-if="(sortedServices.length || excerpt) && contentVisible" class="card-content w-full">
+      <div
+        v-if="(sortedServices.length || excerpt || link || mobile_project_image || desktop_project_image) && contentVisible"
+        class="card-content w-full">
         <div v-if="sortedServices.length" class="w-full flex gap-[20px]">
           <div class="w-1/2 flex flex-col gap-[3px]"></div>
           <div class="w-1/2">
@@ -29,58 +31,91 @@
             </div>
           </div>
         </div>
-        <p v-if="excerpt" class="color-id-medium-grey pt-[20px]">{{ excerpt }}</p>
+        <p v-if="excerpt" class="color-id-medium-grey pt-[40px] pb-[50px]">{{ excerpt }}</p>
+
+        <div v-if="mobile_project_image"
+          class="w-full max-w-[70vw] m-x-auto max-h-[140vw] mb-[50px] border-[5px] border-id-dark-grey overflow-y-scroll">
+          <img :src="mobile_project_image.url" :alt="mobile_project_image.alt || title" class="w-full" />
+        </div>
+
+        <div v-if="link" class="w-full flex justify-end mb-[10px]">
+          <ArrowButton :link="link" :linkLabel="'Visit Website'" :arrowClass="'fill-id-purple h-[16px]'"
+            :customClass="text - id - purple" :customTarget="'_blank'"></ArrowButton>
+        </div>
       </div>
     </transition>
   </article>
 </template>
 
 <script setup>
-// Import 'computed' from Vue
 import { ref, computed } from 'vue';
 
+// --- Components ---
+import ArrowButton from './ArrowButton.vue';
+
+// --- Props ---
 const props = defineProps({
   title: { type: String, required: true },
-  image: { type: String, required: true },
+  image: { type: String, required: true }, // Featured Image (main image)
   taxonomies: { type: Object, default: () => ({}) },
   excerpt: { type: String, default: '' },
-  link: { type: String, default: '' },
+  link: { type: String, default: '' }, // Project URL
+  mobile_project_image: { type: Object, default: null },
+  desktop_project_image: { type: Object, default: null },
 });
 
-// --- THIS IS THE FIX ---
-// Create a computed property that returns the services sorted by their new 'menu_order' field.
+// --- Reactive State ---
+const contentVisible = ref(false);
+
+// --- Computed Properties ---
 const sortedServices = computed(() => {
-  // Check if the services taxonomy exists
   const services = props.taxonomies?.['project-service'];
   if (!Array.isArray(services)) {
     return [];
   }
-
-  // Create a copy of the array and sort it by the menu_order property.
   return [...services].sort((a, b) => a.menu_order - b.menu_order);
 });
 
-const contentVisible = ref(false);
+// --- Methods ---
 function toggleContent() {
   contentVisible.value = !contentVisible.value;
 }
 
-// ... Transition hooks remain the same ...
-function beforeEnter(el) { /* ... */ }
-function enter(el) { /* ... */ }
-function beforeLeave(el) { /* ... */ }
-function leave(el) { /* ... */ }
+// --- Transition Hooks ---
+function beforeEnter(el) {
+  el.style.height = '0';
+  el.style.opacity = '0';
+  el.style.transition = 'height 0.3s ease-out, opacity 0.3s ease-out';
+}
+
+function enter(el) {
+  el.style.height = el.scrollHeight + 'px';
+  el.style.opacity = '1';
+  el.addEventListener('transitionend', () => {
+    el.style.height = 'auto';
+  }, { once: true });
+}
+
+function beforeLeave(el) {
+  el.style.height = el.scrollHeight + 'px';
+  el.style.opacity = '1';
+  el.style.transition = 'height 0.3s ease-in, opacity 0.3s ease-in';
+}
+
+function leave(el) {
+  el.style.height = '0';
+  el.style.opacity = '0';
+}
 </script>
 
 <style scoped>
-/* ... Styles remain the same ... */
 .project-card img {
   display: block;
   width: 100%;
 }
 
 .project-card h5+h5 {
-  margin-top: 10px;
+  margin-top: 16px;
 }
 
 .card-content {

@@ -1,3 +1,5 @@
+<!-- GlitchingText.vue -->
+
 <template>
     <!-- GlitchingText: Animated headline with per-letter glitch/reveal/hide effects -->
     <h1 class="w-full">
@@ -44,12 +46,12 @@ onMounted(async () => {
 
 const config = {
     minDelay: 50,
-    maxDelay: 600,
-    minTransition: 0.1,
-    maxTransition: 0.8,
+    maxDelay: 400,
+    minTransition: 0.05,
+    maxTransition: 0.5,
     numGlitchMin: 1,
     numGlitchMax: 6,
-    hideMultiplier: 4,
+    hideMultiplier: 1,
     minRotate: -360,
     maxRotate: 360,
     minSkew: -45,
@@ -63,7 +65,7 @@ const config = {
         { value: '#FFE412', prob: 0.1 }
     ],
     revealMin: 1,
-    revealMax: 5,
+    revealMax: 4,
     enableAdd: true,
     enableRemove: true,
     modeChangeDelay: 3000,
@@ -126,10 +128,19 @@ function glitchCycle(now = 0) {
             if (animationState.value === animationStates.REVEALING) {
                 handleRevealLogic(totalLetters);
             } else {
+                // Fire event when entering HIDING state for the first time in this cycle
+                if (!glitchCycle._hidingEventFired) {
+                    window.dispatchEvent(new CustomEvent('showGoDigital'));
+                    glitchCycle._hidingEventFired = true;
+                }
                 handleHideLogic();
             }
             nextDelay = config.minDelay + Math.random() * (config.maxDelay - config.minDelay);
             lastFrameTime = now;
+        }
+        // Reset the event flag if not in HIDING state
+        if (animationState.value !== animationStates.HIDING && glitchCycle._hidingEventFired) {
+            glitchCycle._hidingEventFired = false;
         }
         rafId = requestAnimationFrame(glitchCycle);
     } else if (animationState.value === animationStates.REVEAL_PAUSE) {
@@ -163,8 +174,7 @@ function startGlitching() {
 }
 
 function resetAnimation() {
-    const ts = new Date().toISOString();
-    // console.log(`[${ts}] [resetAnimation] Resetting animation`);
+    // const ts = new Date().toISOString();
     if (rafId) {
         cancelAnimationFrame(rafId);
         rafId = null;
@@ -184,16 +194,15 @@ async function startHeadlineAnimation() {
     const letters = Array.from(document.querySelectorAll('.letter'));
     setTargets(letters);
     resetAnimation();
-    setTimeout(() => {
-        const ts = new Date().toISOString();
-        startGlitching();
-        // console.log(`[${ts}] [startHeadlineAnimation] Animation started.`);
-    }, 100);
+    // setTimeout(() => {
+    // const ts = new Date().toISOString();
+    startGlitching();
+    // console.log(`[${ts}] [startHeadlineAnimation] Animation started.`);
+    // }, 100);
 }
 
 async function onHeadlineAnimationCompleteLocal() {
-    const ts = new Date().toISOString();
-    // console.log(`[${ts}] [onHeadlineAnimationCompleteLocal] Animation complete, switching headline.`);
+    // const ts = new Date().toISOString();
     if (headlines.value.length > 0) {
         currentHeadlineIndex.value = (currentHeadlineIndex.value + 1) % headlines.value.length;
         await startHeadlineAnimation();
@@ -206,6 +215,10 @@ async function onHeadlineAnimationCompleteLocal() {
     display: inline-block;
     white-space: nowrap;
 }
+
+/* h1 {
+    font-size: 36px;
+} */
 
 .letter {
     opacity: 0;

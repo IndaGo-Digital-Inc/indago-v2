@@ -1,86 +1,79 @@
 <template>
-  <!-- Main container for Home page content -->
-  <section class="container flex flex-col">
-    <!-- Hero section with glitching headline and call-to-action -->
-    <div class="flex flex-col items-start justify-between w-full pt-[100px] pb-[30px]"
-      :style="{ minHeight: `calc(100vh - ${headerHeight || 100}px)` }">
-      <div class=" flex flex-col gap-[30px] w-full mx-auto">
-        <!-- Animated glitching headline text -->
-        <GlitchingText ref="glitchTextRef" :text="'Bespoke Digital Marketing that Captivates'" class="w-full" />
+  <section class="container relative">
+    <div class="flex flex-col items-start justify-center w-full min-h-screen">
+      <div class="flex flex-col gap-[30px] w-full mx-auto">
+        <GlitchingText ref="glitchTextRef" class="w-full pb-[90px]" />
       </div>
       <div class="w-full flex justify-end">
-        <!-- GO Digital button, fades in when animation completes or user scrolls -->
-        <ArrowButton :class="['go-digital-btn', (showGoDigital || userScrolled) ? 'fade-in' : 'fade-out']"
-          @click="() => { console.log('GO Digital direct click'); resetGlitchText(); }">GO Digital</ArrowButton>
-        <!-- Down arrow for navigation cue -->
-        <button class="w-[36px] hidden md:block">
-          <ChevronDown class="fill-id-dark-grey" />
-        </button>
+        <ArrowButton class="absolute bottom-[50px]" :link="'#contact-form'" :linkLabel="'GO Digital'"
+          :customClass="'text-id-yellow'" :arrowClass="'fill-id-yellow h-[16px] rotate-90'"></ArrowButton>
       </div>
     </div>
   </section>
   <section class="container flex flex-col">
-    <!-- SVG scroll animation and description section -->
-    <div class="flex flex-col items-start pt-[150px]">
-      <!-- Animated SVG sequence based on scroll position -->
-      <SvgScrollAnimation :svgs="standOutSvgs" />
-      <p class="pt-[90px]">
+    <div class="flex flex-col items-center justify-center w-full gap-[100px] pt-[60px] pb-[60px]">
+      <SvgScrollAnimation :svgs="standOutSvgs" class="max-w-[65vw]" />
+      <p class="text-id-medium-grey">
         IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive
         measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented
         digital marketing to fuel your online success.
       </p>
     </div>
-    <!-- Projects showcase section -->
-    <div class="project-wrapper flex flex-col pt-[60px] mb-[120px]">
-      <!-- Render each project card from fetched data -->
-      <ProjectCard v-for="(project, idx) in projects" :key="idx" :title="project.title" :image="project.image"
-        :excerpt="project.excerpt" :taxonomies="project.taxonomies" :link="project.link" />
-    </div>
   </section>
-  <section class="container flex flex-col pb-[120px]">
+  <section class="container flex flex-col pt-[32px]">
+    <ProjectCard v-for="(project, idx) in projects" :key="idx" :title="project.title" :image="project.image"
+      :excerpt="project.excerpt" :taxonomies="project.taxonomies" :link="project.link"
+      :mobile_project_image="project.mobile_project_image" :desktop_project_image="project.desktop_project_image" />
+  </section>
+  <section class="container flex flex-col">
     <Reviews />
   </section>
-  <section class="container flex flex-col pb-[120px]">
+  <section class="container flex flex-col">
     <ServicesList />
   </section>
-  <section class="container flex flex-col pb-[120px]">
+  <section class="container flex flex-col">
     <SvgScrollAnimation :svgs="trustedPartnersSvgs" />
-    <p class="pt-[90px]">
+    <p class="">
       IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive
       measurable results. We blend innovative website development, data-driven SEO strategies, and results-oriented
       digital marketing to fuel your online success.
     </p>
   </section>
-  <section class="container flex flex-col pb-[120px] gap-[30px]">
+  <section class="container flex flex-col gap-[90px]">
     <h2>It’s time to transform your online presence. Contact us today for a free consultation.</h2>
     <ContactForm />
   </section>
 </template>
 
 <script setup>
-import { inject, computed } from 'vue';
-// Import core and UI components for the Home page
+import { ref, onMounted, onUnmounted, inject, computed } from 'vue';
+import { useProjects } from '../composables/useProjects';
+
+// Components
 import SvgScrollAnimation from '../components/SvgScrollAnimation.vue';
 import ArrowButton from '../components/ArrowButton.vue';
 import ProjectCard from '../components/ProjectCard.vue';
-import ChevronDown from '../assets/id-chevron-down.svg';
 import GlitchingText from '../components/GlitchingText.vue';
 import ServicesList from '../components/ServicesList.vue';
 import ContactForm from '../components/ContactForm.vue';
+import Reviews from '../components/Reviews.vue';
 
-// Import SVG assets for stand out scroll animation
-import StopAnim from '../assets/stop-blending-in/stop.svg';
-import BlendingAnim from '../assets/stop-blending-in/blending.svg';
-import InAnim from '../assets/stop-blending-in/in.svg';
-import OutAnim from '../assets/stop-blending-in/out.svg';
-import StandAnim from '../assets/stop-blending-in/stand.svg';
-import ToAnim from '../assets/stop-blending-in/to.svg';
-import TimeAnim from '../assets/stop-blending-in/time.svg';
+// Assets
+import ChevronDown from '../assets/id-chevron-down.svg';
+
+// Stand Out SVGs
 import ItsAnim from '../assets/stop-blending-in/its.svg';
-import { ref, onMounted } from 'vue';
-import { useProjects } from '../composables/useProjects';
+import TimeAnim from '../assets/stop-blending-in/time.svg';
+import ToAnim from '../assets/stop-blending-in/to.svg';
+import StandAnim from '../assets/stop-blending-in/stand.svg';
+import OutAnim from '../assets/stop-blending-in/out.svg';
 
-// SVGs used for stand out scroll animation
+// Trusted Partners SVGs
+import TrustedAnim from '../assets/trusted-partners/trusted.svg';
+import PartnerAnim from '../assets/trusted-partners/partners.svg';
+import TangibleAnim from '../assets/trusted-partners/tangible.svg';
+import ResultsAnim from '../assets/trusted-partners/results.svg';
+
 const standOutSvgs = [
   { component: ItsAnim, color: 'fill-id-purple' },
   { component: TimeAnim, color: 'fill-id-purple' },
@@ -89,13 +82,6 @@ const standOutSvgs = [
   { component: OutAnim, color: 'fill-id-purple' },
 ];
 
-// Impport SVG assets for trusted partners scroll animation
-import TrustedAnim from '../assets/trusted-partners/trusted.svg';
-import PartnerAnim from '../assets/trusted-partners/partners.svg';
-import TangibleAnim from '../assets/trusted-partners/tangible.svg';
-import ResultsAnim from '../assets/trusted-partners/results.svg';
-
-// SVGs for trusted partners scroll animation
 const trustedPartnersSvgs = [
   { component: TrustedAnim, color: 'fill-id-purple' },
   { component: PartnerAnim, color: 'fill-id-purple' },
@@ -103,33 +89,22 @@ const trustedPartnersSvgs = [
   { component: ResultsAnim, color: 'fill-id-purple' },
 ];
 
-// Ref for GlitchingText component to control animation
 const glitchTextRef = ref(null);
+const showGoDigital = ref(false);
+const userScrolled = ref(false);
 
-// Resets the glitch animation to initial state
+const injectedHeaderHeight = inject('headerHeight', 100);
+const headerHeight = computed(() => injectedHeaderHeight?.value ?? 100);
+
+const { projects, loading: projectsLoading, error: projectsError, fetchProjects } = useProjects();
+
 function resetGlitchText() {
   if (glitchTextRef.value && glitchTextRef.value.resetAnimation) {
     glitchTextRef.value.resetAnimation();
   }
 }
 
-// Inject headerHeight from App.vue
-const injectedHeaderHeight = inject('headerHeight', 100);
-const headerHeight = computed(() => injectedHeaderHeight?.value ?? 100);
-
-// Controls visibility of the GO DIGITAL button
-const showGoDigital = ref(false);
-
-// Use the useProjects composable
-const { projects, loading: projectsLoading, error: projectsError, fetchProjects } = useProjects();
-onMounted(fetchProjects);
-
-// Tracks if the user has scrolled the page
-const userScrolled = ref(false);
-
-// Setup scroll and custom event listeners on mount
 onMounted(() => {
-  // Detect first scroll to trigger UI changes
   function handleFirstScroll() {
     if (!userScrolled.value) {
       userScrolled.value = true;
@@ -138,27 +113,21 @@ onMounted(() => {
   }
   window.addEventListener('scroll', handleFirstScroll, { once: true });
 
-  // Show GO DIGITAL button when glitch animation completes
   window.addEventListener('showGoDigital', () => {
     showGoDigital.value = true;
   });
 
-  // Listen for global glitch reset event
   window.addEventListener('reset-glitch', resetGlitchText);
+
+  fetchProjects();
 });
 
-// Cleanup event listeners on unmount
-import { onUnmounted } from 'vue';
-import Reviews from '../components/Reviews.vue';
 onUnmounted(() => {
   window.removeEventListener('reset-glitch', resetGlitchText);
 });
-
-
 </script>
 
 <style scoped>
-/* Styles for the GO DIGITAL button fade-in/fade-out animation */
 .go-digital-btn {
   opacity: 0;
   pointer-events: none;
@@ -168,10 +137,5 @@ onUnmounted(() => {
 .go-digital-btn.fade-in {
   opacity: 1;
   pointer-events: auto;
-}
-
-.go-digital-btn.fade-out {
-  opacity: 0;
-  pointer-events: none;
 }
 </style>

@@ -2,13 +2,8 @@
   <!-- Container for SVG scroll animation -->
   <div ref="svgContainer" class="w-full">
     <!-- Dynamically render the active SVG component based on scroll position -->
-    <component
-      :is="svgs[activeIndex].component"
-      :key="activeIndex"
-      ref="svgRef"
-      class="w-full block"
-      :class="svgs[activeIndex].color"
-    />
+    <component :is="svgs[activeIndex].component" :key="activeIndex" ref="svgRef" class="w-full block"
+      :class="svgs[activeIndex].color" />
   </div>
 </template>
 

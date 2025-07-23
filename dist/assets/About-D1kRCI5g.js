@@ -1,0 +1,1 @@
+import{_ as o,c as n,f as t,b as s}from"./main-DbJ1Xkrn.js";const r={},a={class:"page-content"};function c(l,e){return s(),n("div",a,e[0]||(e[0]=[t("h2",null,"About Page",-1),t("p",null,"Learn more about us here.",-1)]))}const _=o(r,[["render",c]]);export{_ as default};
