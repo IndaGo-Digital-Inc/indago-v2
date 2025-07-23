@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { computed, defineExpose, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useGlitchAnimation } from '../composables/useGlitchAnimation.ts';
 import { config as defaultConfig } from '../composables/glitch.config.ts';
 

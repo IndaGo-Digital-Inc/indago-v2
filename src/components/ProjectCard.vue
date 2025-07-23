@@ -1,6 +1,6 @@
 <template>
   <article
-    class="project-card flex flex-col items-start justify-start pt-[40px] pb-[20px] border-t border-id-dark-grey">
+    class="project-card flex flex-col items-start justify-start pt-[40px] pb-[20px] border-t border-id-dark-grey bg-id-black">
     <div class="card-header cursor-pointer w-full" @click="toggleContent">
       <div class="w-full flex gap-[20px]">
         <div class="w-1/2 flex flex-col gap-[3px] relative">

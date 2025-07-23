@@ -1,6 +1,6 @@
 <template>
   <section class="container relative bg-id-black">
-    <div class="flex flex-col items-start justify-center w-full min-h-screen bg-id-black">
+    <div class="flex flex-col items-start justify-center w-full min-h-[90vh] bg-id-black">
       <div class="flex flex-col gap-[30px] w-full mx-auto pb-[10vh] bg-id-black hero-section">
         <GlitchingText ref="heroGlitch" :headline="currentHeadline" @animation-complete="showNextHeadline"
           :options="glitchOptions" />
@@ -14,7 +14,7 @@
   </section>
 
   <section class="container flex flex-col bg-id-black">
-    <div class="flex flex-col items-center justify-center w-full gap-[230px] pt-[150px] pb-[184px] bg-id-black">
+    <div class="flex flex-col items-center justify-center w-full gap-[230px] pt-[180px] pb-[184px] bg-id-black">
       <SvgScrollAnimation :svgs="standOutSvgs" :direction="'vertical'" />
       <p class="text-id-light-grey max-w-[200px] text-center">
         IndaGo Digital crafts captivating digital experiences that set you apart from your competition and drive
