@@ -1,0 +1,1 @@
+import{_ as n,c as o,g as t,b as c}from"./main-4i4zqV5S.js";const s={},a={class:"page-content"};function r(l,e){return c(),o("div",a,e[0]||(e[0]=[t("h2",null,"Contact Page",-1),t("p",null,"Contact us here.",-1)]))}const d=n(s,[["render",r]]);export{d as default};

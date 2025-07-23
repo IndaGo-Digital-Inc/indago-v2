@@ -1,7 +1,4 @@
-<!-- GlitchingText.vue -->
-
 <template>
-    <!-- GlitchingText: Animated headline with per-letter glitch/reveal/hide effects -->
     <h1 class="w-full">
         <template v-for="(word, wIdx) in words" :key="wIdx">
             <span class="word-block">
@@ -15,81 +12,79 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, watch, nextTick } from 'vue';
+// Import our new, cleaner pieces
+import { config } from '../composables/glitch.config.ts';
+import { useAnimationLoop } from '../composables/useAnimationLoop.ts';
+// Import existing composables
 import { useGlitchLifecycle } from '../composables/useGlitchLifecycle.ts';
 import { useGlitchAnimation } from '../composables/useGlitchAnimation.ts';
 import { useLetterVisibility } from '../composables/useLetterVisibility.ts';
-import { useHeadlines } from '../composables/useHeadlines.ts';
 
-const { headlines, loading, error, fetchHeadlines } = useHeadlines();
-const currentHeadlineIndex = ref(0);
+// --- PROPS AND EMITS ---
+const props = defineProps({
+    headline: { type: String, required: true, default: '' },
+});
+const emit = defineEmits(['animationComplete', 'hiding']);
+
 const words = ref([]);
 
-async function setWordsFromHeadline(idx) {
-    const ts = new Date().toISOString();
-    if (headlines.value.length > 0) {
-        // console.log(`[${ts}] [setWordsFromHeadline] Switching to headline index:`, idx, 'headline:', headlines.value[idx]);
-        words.value = headlines.value[idx].words.map(word => Array.isArray(word) ? [...word] : word);
-    } else {
-        words.value = [];
-    }
-    await nextTick();
-    await nextTick();
-}
-
-onMounted(async () => {
-    await fetchHeadlines();
-    if (headlines.value.length > 0) {
-        await startHeadlineAnimation();
-    }
-});
-
-const config = {
-    minDelay: 50,
-    maxDelay: 400,
-    minTransition: 0.05,
-    maxTransition: 0.5,
-    numGlitchMin: 1,
-    numGlitchMax: 6,
-    hideMultiplier: 1,
-    minRotate: -360,
-    maxRotate: 360,
-    minSkew: -45,
-    maxSkew: 45,
-    minScale: 0.5,
-    maxScale: 1.5,
-    scaleProb: 0.8,
-    colorPalette: [
-        { value: '#B6B6B6', prob: 0.6 },
-        { value: '#4B0082', prob: 0.3 },
-        { value: '#FFE412', prob: 0.1 }
-    ],
-    revealMin: 1,
-    revealMax: 4,
-    enableAdd: true,
-    enableRemove: true,
-    modeChangeDelay: 3000,
-};
-
-const {
-    glitchInterval,
-    targets,
-    setTargets,
-} = useGlitchLifecycle(config);
-
-const animationStates = {
-    REVEALING: 'REVEALING',
-    REVEAL_PAUSE: 'REVEAL_PAUSE',
-    HIDING: 'HIDING',
-};
+// --- COMPOSABLE SETUP ---
+const { glitchInterval, targets, setTargets } = useGlitchLifecycle(config);
+const animationStates = { REVEALING: 'REVEALING', REVEAL_PAUSE: 'REVEAL_PAUSE', HIDING: 'HIDING' };
 const animationState = ref(animationStates.REVEALING);
+const { applyGlitchesToCandidates } = useGlitchAnimation(config, animationState);
+const { handleRevealLogic, handleHideLogic } = useLetterVisibility(config, targets, animationState, onAnimationCompleteInternal);
 
-const { applyGlitchStyle, applyGlitchesToCandidates } = useGlitchAnimation(config, animationState);
-const { handleRevealLogic, handleHideLogic } = useLetterVisibility(config, targets, animationState, onHeadlineAnimationCompleteLocal);
-
-let rafId = null;
+// --- ANIMATION TIMING ---
 let lastFrameTime = 0;
 let nextDelay = config.minDelay;
+
+// The logic from the old `glitchCycle` is now the callback for our loop
+const onTick = (now = 0) => {
+    if (!targets.value.length) return;
+    if (!lastFrameTime) lastFrameTime = now;
+    const elapsed = now - lastFrameTime;
+
+    // Paused state logic
+    if (animationState.value === animationStates.REVEAL_PAUSE) {
+        if (!onTick._pauseStart) onTick._pauseStart = now;
+        if (now - onTick._pauseStart >= config.modeChangeDelay) {
+            animationState.value = animationStates.HIDING;
+            lastFrameTime = 0;
+            onTick._pauseStart = undefined;
+        }
+        return; // Don't run main logic during pause
+    }
+
+    // Main animation logic for Revealing/Hiding
+    if (elapsed >= nextDelay) {
+        const totalLetters = targets.value.filter(el => el.textContent?.trim()).length;
+        const { glitchCandidates, min, max } = getGlitchCandidatesAndRange();
+        const count = Math.max(min, Math.floor(Math.random() * (max - min + 1)) + min);
+
+        applyGlitchesToCandidates(glitchCandidates, count);
+
+        if (animationState.value === animationStates.REVEALING) {
+            handleRevealLogic(totalLetters);
+        } else { // HIDING
+            if (!onTick._hidingEventFired) {
+                emit('hiding');
+                onTick._hidingEventFired = true;
+            }
+            handleHideLogic();
+        }
+
+        nextDelay = config.minDelay + Math.random() * (config.maxDelay - config.minDelay);
+        lastFrameTime = now;
+    }
+    if (animationState.value !== animationStates.HIDING && onTick._hidingEventFired) {
+        onTick._hidingEventFired = false;
+    }
+};
+
+// Instantiate the animation loop with our tick logic
+const loop = useAnimationLoop(onTick);
 
 function getGlitchCandidatesAndRange() {
     let glitchCandidates, min, max;
@@ -101,124 +96,55 @@ function getGlitchCandidatesAndRange() {
         glitchCandidates = targets.value.filter(el => el.classList.contains('visible'));
         min = Math.min(config.numGlitchMin * config.hideMultiplier, glitchCandidates.length);
         max = Math.min(config.numGlitchMax * config.hideMultiplier, glitchCandidates.length);
-    } else if (animationState.value === animationStates.REVEAL_PAUSE) {
-        glitchCandidates = targets.value.filter(el => el.classList.contains('visible'));
-        min = Math.min(config.numGlitchMin * 0.1, glitchCandidates.length);
-        max = Math.min(config.numGlitchMax * 0.1, glitchCandidates.length);
     } else {
-        glitchCandidates = [];
-        min = 0;
-        max = 0;
+        glitchCandidates = []; min = 0; max = 0;
     }
     return { glitchCandidates, min, max };
 }
 
-// Main animation loop using requestAnimationFrame
-function glitchCycle(now = 0) {
-    if (!targets.value.length) return;
-    if (!lastFrameTime) lastFrameTime = now;
-    const elapsed = now - lastFrameTime;
-
-    if (animationState.value === animationStates.REVEALING || animationState.value === animationStates.HIDING) {
-        if (elapsed >= nextDelay) {
-            const totalLetters = targets.value.filter(el => el.textContent && el.textContent.trim() !== '' && el.textContent.trim() !== ' ').length;
-            const { glitchCandidates, min, max } = getGlitchCandidatesAndRange();
-            const count = Math.max(min, Math.floor(Math.random() * (max - min + 1)) + min);
-            applyGlitchesToCandidates(glitchCandidates, count);
-            if (animationState.value === animationStates.REVEALING) {
-                handleRevealLogic(totalLetters);
-            } else {
-                // Fire event when entering HIDING state for the first time in this cycle
-                if (!glitchCycle._hidingEventFired) {
-                    window.dispatchEvent(new CustomEvent('showGoDigital'));
-                    glitchCycle._hidingEventFired = true;
-                }
-                handleHideLogic();
-            }
-            nextDelay = config.minDelay + Math.random() * (config.maxDelay - config.minDelay);
-            lastFrameTime = now;
-        }
-        // Reset the event flag if not in HIDING state
-        if (animationState.value !== animationStates.HIDING && glitchCycle._hidingEventFired) {
-            glitchCycle._hidingEventFired = false;
-        }
-        rafId = requestAnimationFrame(glitchCycle);
-    } else if (animationState.value === animationStates.REVEAL_PAUSE) {
-        if (!glitchCycle._pauseStart) {
-            glitchCycle._pauseStart = now;
-        }
-        const pauseElapsed = now - glitchCycle._pauseStart;
-        if (elapsed >= nextDelay) {
-            const { glitchCandidates, min, max } = getGlitchCandidatesAndRange();
-            const count = Math.max(min, Math.floor(Math.random() * (max - min + 1)) + min);
-            applyGlitchesToCandidates(glitchCandidates, count);
-            nextDelay = config.minDelay + Math.random() * (config.maxDelay - config.minDelay);
-            lastFrameTime = now;
-        }
-        if (pauseElapsed >= config.modeChangeDelay) {
-            animationState.value = animationStates.HIDING;
-            lastFrameTime = 0;
-            glitchCycle._pauseStart = undefined;
-            rafId = requestAnimationFrame(glitchCycle);
-        } else {
-            rafId = requestAnimationFrame(glitchCycle);
-        }
-    }
-}
-
-function startGlitching() {
-    if (rafId) cancelAnimationFrame(rafId);
+function resetAnimationState() {
+    loop.stop();
+    if (glitchInterval.value) clearTimeout(glitchInterval.value);
+    targets.value.forEach(el => el.classList.remove('visible'));
+    animationState.value = animationStates.REVEALING;
     lastFrameTime = 0;
     nextDelay = config.minDelay;
-    rafId = requestAnimationFrame(glitchCycle);
 }
 
-function resetAnimation() {
-    // const ts = new Date().toISOString();
-    if (rafId) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
+// --- ORCHESTRATION ---
+async function startHeadlineAnimation(headlineText) {
+    if (!headlineText) {
+        words.value = [];
+        return;
     }
-    if (glitchInterval.value) {
-        clearTimeout(glitchInterval.value);
-        glitchInterval.value = null;
-    }
-    if (targets.value && targets.value.length) {
-        targets.value.forEach(el => el.classList.remove('visible'));
-    }
-    animationState.value = animationStates.REVEALING;
-}
-
-async function startHeadlineAnimation() {
-    await setWordsFromHeadline(currentHeadlineIndex.value);
+    words.value = headlineText.split(' ').map(word => word.split(''));
+    await nextTick();
+    await nextTick();
     const letters = Array.from(document.querySelectorAll('.letter'));
     setTargets(letters);
-    resetAnimation();
-    // setTimeout(() => {
-    // const ts = new Date().toISOString();
-    startGlitching();
-    // console.log(`[${ts}] [startHeadlineAnimation] Animation started.`);
-    // }, 100);
+    resetAnimationState();
+    loop.start();
 }
 
-async function onHeadlineAnimationCompleteLocal() {
-    // const ts = new Date().toISOString();
-    if (headlines.value.length > 0) {
-        currentHeadlineIndex.value = (currentHeadlineIndex.value + 1) % headlines.value.length;
-        await startHeadlineAnimation();
+watch(() => props.headline, (newHeadline) => {
+    if (newHeadline) {
+        startHeadlineAnimation(newHeadline);
     }
+}, { immediate: true });
+
+function onAnimationCompleteInternal() {
+    setTimeout(() => {
+        emit('animationComplete');
+    }, config.resetDelay);
 }
 </script>
 
 <style scoped>
+/* Styles remain the same */
 .word-block {
     display: inline-block;
     white-space: nowrap;
 }
-
-/* h1 {
-    font-size: 36px;
-} */
 
 .letter {
     opacity: 0;

@@ -40,7 +40,7 @@
 
         <div v-if="link" class="w-full flex justify-end mb-[10px]">
           <ArrowButton :link="link" :linkLabel="'Visit Website'" :arrowClass="'fill-id-purple h-[16px]'"
-            :customClass="text - id - purple" :customTarget="'_blank'"></ArrowButton>
+            :customClass="'text-id-purple'" :customTarget="'_blank'"></ArrowButton>
         </div>
       </div>
     </transition>
